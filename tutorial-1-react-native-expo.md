@@ -68,3 +68,35 @@ La guía propone separar pantallas y componentes bajo `src/`. Para la estructura
 
 El tutorial también menciona almacenamiento con SQLite como tema posterior. Para esta entrega prevalece el alcance de Sprint 1: no se requiere SQLite, Context ni APIs remotas; sí se solicita React Navigation en la US6.
 
+
+## Consignas por User Story
+
+El detalle completo y los criterios de validación están en [ExpenseTracker Sprint 1](expense-tracker-sprint-1.md).
+
+### US1 — Crear el proyecto Expo
+
+Crear `ExpenseTracker` con la plantilla `blank`, comprobar que abra en Expo Go y versionar el proyecto en Git.
+
+### US2 — Definir la estructura
+
+Separar pantallas, componentes, navegación y recursos en una estructura clara. La consigna evalúa React Navigation.
+
+### US3 — Construir la bienvenida
+
+Mostrar el nombre ExpenseTracker, un saludo y una breve descripción de su propósito: registrar gastos.
+
+### US4 — Construir el formulario
+
+Representar nombre, monto, categoría y un botón Guardar funcional. No se requiere persistencia.
+
+### US5 — Construir el listado
+
+Mostrar como datos estáticos Supermercado ($25.000), Combustible ($18.000) e Internet ($32.000), con descripción y monto.
+
+### US6 — Integrar las vistas
+
+Reunir bienvenida, formulario y listado con navegación funcional mediante al menos un `TabNavigator` y un `StackNavigator`.
+
+### US7 — Bonus opcional
+
+Agregar íconos, colores por categoría, total de gastos o imágenes e ilustraciones.
