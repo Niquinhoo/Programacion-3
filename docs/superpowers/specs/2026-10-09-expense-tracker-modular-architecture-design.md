@@ -15,6 +15,8 @@ Organizar ExpenseTracker en módulos pequeños con una responsabilidad clara, si
 
 ## Estructura objetivo
 
+Los módulos de la app, incluidos los componentes que contienen JSX, usan extensión `.js`, igual que el proyecto actual de Expo. `.jsx` es una alternativa de convención y no hace falta migrar a ella.
+
 ```text
 src/
 ├── components/
