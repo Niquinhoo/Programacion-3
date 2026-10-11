@@ -2,6 +2,7 @@
 
 Prototipo de React Native y Expo creado con la plantilla `blank` en la rama `STP1`.
 Consigna: [ExpenseTracker Sprint 1](expense-tracker-sprint-1.md).
+Informe del sprint: [índice y archivos individuales de US#1–US#7](docs/informe-sprint-1.md).
 
 ## Ejecutar
 
