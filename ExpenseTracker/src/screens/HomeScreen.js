@@ -14,6 +14,7 @@ export default function HomeScreen({ navigation, route }) {
   const dragStartedCollapsed = useRef(false);
   const scrollY = useRef(0);
   const heroCollapsed = Boolean(route.params?.heroCollapsed);
+  const heroTransitioning = heroCollapsed && !route.params?.heroTransitionComplete;
 
   function handleScrollBeginDrag({ nativeEvent }) {
     if (!isFocused) return;
@@ -44,8 +45,7 @@ export default function HomeScreen({ navigation, route }) {
     if (scrollY.current <= 0) navigation.setParams({ heroCollapsed: false, heroTransitionComplete: false });
   }
 
-  // Conserva recorrido al crecer el área visible, para evitar que el hero oscile al contraerse.
-  // shortcut: reserva 264 px durante el colapso (~240 px); ajustar si cambia la altura del hero.
+  // shortcut: reserva 264 px al contraer para evitar oscilaciones; ajustar si cambia la altura del hero.
   return (
     <Screen
       fullBleed
@@ -53,7 +53,7 @@ export default function HomeScreen({ navigation, route }) {
       onScrollBeginDrag={handleScrollBeginDrag}
       onWheel={Platform.OS === 'web' ? handleWheel : undefined}
       onLayout={({ nativeEvent }) => setScrollHeight(nativeEvent.layout.height)}
-      contentContainerStyle={{ minHeight: scrollHeight + (heroCollapsed && !route.params?.heroTransitionComplete ? 264 : 24) }}
+      contentContainerStyle={{ minHeight: scrollHeight + (heroTransitioning ? 264 : 24) }}
     >
       {isFocused && <StatusBar style="light" />}
       <View style={localStyles.body}>
@@ -66,7 +66,11 @@ export default function HomeScreen({ navigation, route }) {
         </View>
         <View style={localStyles.list}>
           {expenses.slice(0, 3).map((expense) => (
-            <ExpenseRow key={expense.id} expense={expense} onPress={() => navigation.navigate('DetalleGasto', { expenseId: expense.id })} />
+            <ExpenseRow
+              key={expense.id}
+              expense={expense}
+              onPress={() => navigation.navigate('DetalleGasto', { expenseId: expense.id })}
+            />
           ))}
         </View>
       </View>

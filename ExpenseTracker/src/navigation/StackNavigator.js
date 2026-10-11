@@ -9,7 +9,12 @@ export default function StackNavigator() {
   return (
     <Stack.Navigator id="RootStack" screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Tabs" component={TabNavigator} />
-      <Stack.Group screenOptions={{ presentation: 'transparentModal', animation: 'none', gestureEnabled: false, contentStyle: { backgroundColor: 'transparent' } }}>
+      <Stack.Group screenOptions={{
+        presentation: 'transparentModal',
+        animation: 'none',
+        gestureEnabled: false,
+        contentStyle: { backgroundColor: 'transparent' },
+      }}>
         <Stack.Screen name="DetalleGasto" component={ExpenseDetailScreen} />
         <Stack.Screen name="NuevoGasto" component={NewExpenseModal} />
       </Stack.Group>

@@ -1,26 +1,22 @@
 import { useEffect, useState } from 'react';
-import { AccessibilityInfo, Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { expenses } from '../data/expenses';
 import { filterExpenses, formatAmount } from '../utils/expense';
+import useReduceMotion from '../hooks/useReduceMotion';
 import { colors, fonts } from '../styles';
 
 export default function ExpenseHero({ expanded, collapsed = false, navigation, onAnimationComplete }) {
   const insets = useSafeAreaInsets();
   const showDetails = expanded && !collapsed;
   const [progress] = useState(() => new Animated.Value(showDetails ? 1 : 0));
-  const [reduceMotion, setReduceMotion] = useState(true);
+  const reduceMotion = useReduceMotion();
   const [introHeight, setIntroHeight] = useState(154);
   const [footerHeight, setFooterHeight] = useState(64);
   const items = expanded ? expenses : filterExpenses(expenses, { period: 'Mes' });
   const total = items.reduce((sum, expense) => sum + expense.amount, 0);
-
-  useEffect(() => {
-    AccessibilityInfo.isReduceMotionEnabled().then(setReduceMotion).catch(() => setReduceMotion(true));
-    const subscription = AccessibilityInfo.addEventListener('reduceMotionChanged', setReduceMotion);
-    return () => subscription.remove();
-  }, []);
+  const interpolate = (collapsed, open) => progress.interpolate({ inputRange: [0, 1], outputRange: [collapsed, open] });
 
   useEffect(() => {
     const animation = Animated.timing(progress, {
@@ -35,18 +31,23 @@ export default function ExpenseHero({ expanded, collapsed = false, navigation, o
 
   return (
     <View testID="expense-hero" style={[styles.hero, { paddingTop: insets.top + 24 }]}>
-      <Animated.View style={[styles.art, { transform: [{ translateY: progress.interpolate({ inputRange: [0, 1], outputRange: [0, 14] }) }] }]} pointerEvents="none" aria-hidden>
+      <Animated.View
+        style={[styles.art, { transform: [{ translateY: interpolate(0, 14) }] }]}
+        pointerEvents="none"
+        aria-hidden
+      >
         <View style={styles.outerOrbit} />
         <View style={styles.innerOrbit} />
         <View style={styles.lightOrbit} />
       </Animated.View>
       <View style={styles.heroTop}>
         <Text style={styles.eyebrow}>{expanded ? 'EXPENSETRACKER' : 'EXPENSETRACKER / GASTOS'}</Text>
-        <Animated.View aria-hidden={expanded} style={[styles.demoBadge, { opacity: expanded && collapsed ? 0 : progress.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }) }]}>
-          <View style={styles.dot} /><Text style={styles.demoText}>DEMO</Text>
-        </Animated.View>
       </View>
-      <Animated.View aria-hidden={!showDetails} pointerEvents={showDetails ? 'auto' : 'none'} style={{ height: progress.interpolate({ inputRange: [0, 1], outputRange: [0, introHeight] }), opacity: progress, overflow: 'hidden' }}>
+      <Animated.View
+        aria-hidden={!showDetails}
+        pointerEvents={showDetails ? 'auto' : 'none'}
+        style={{ height: interpolate(0, introHeight), opacity: progress, overflow: 'hidden' }}
+      >
         <View onLayout={({ nativeEvent }) => setIntroHeight(nativeEvent.layout.height)} style={styles.intro}>
           <Text style={styles.title}>{'Tus gastos,\nmás claros.'}</Text>
           <Text style={styles.description}>Bienvenido. Registrá tus gastos y conocé en qué usás tu dinero.</Text>
@@ -55,21 +56,44 @@ export default function ExpenseHero({ expanded, collapsed = false, navigation, o
       <View style={styles.balance}>
         <View style={styles.total}>
           <Text style={styles.totalLabel}>{expanded ? 'TOTAL DE GASTOS' : 'ESTE MES'}</Text>
-          <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={styles.amount}>{formatAmount(total)}</Text>
+          <Text numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7} style={styles.amount}>
+            {formatAmount(total)}
+          </Text>
         </View>
-        <Animated.View aria-hidden pointerEvents="none" style={{ opacity: progress, overflow: 'hidden', height: progress.interpolate({ inputRange: [0, 1], outputRange: [0, 104] }), width: progress.interpolate({ inputRange: [0, 1], outputRange: [0, 92] }), marginLeft: progress.interpolate({ inputRange: [0, 1], outputRange: [0, 12] }) }}>
+        <Animated.View
+          aria-hidden
+          pointerEvents="none"
+          style={{
+            opacity: progress,
+            overflow: 'hidden',
+            height: interpolate(0, 104),
+            width: interpolate(0, 92),
+            marginLeft: interpolate(0, 12),
+          }}
+        >
           <View style={styles.chart}>
             {[28, 46, 70, 96].map((height) => <View key={height} style={[styles.bar, { height }]} />)}
           </View>
         </Animated.View>
       </View>
-      <Animated.View aria-hidden={!showDetails} pointerEvents={showDetails ? 'auto' : 'none'} style={{ height: progress.interpolate({ inputRange: [0, 1], outputRange: [0, footerHeight] }), opacity: progress, overflow: 'hidden' }}>
+      <Animated.View
+        aria-hidden={!showDetails}
+        pointerEvents={showDetails ? 'auto' : 'none'}
+        style={{ height: interpolate(0, footerHeight), opacity: progress, overflow: 'hidden' }}
+      >
         <View onLayout={({ nativeEvent }) => setFooterHeight(nativeEvent.layout.height)} style={styles.heroFooter}>
           <View style={styles.activity}>
-            <View style={styles.countBadge}><Text style={styles.count}>{expenses.length} gastos</Text></View>
+            <View style={styles.countBadge}>
+              <Text style={styles.count}>{expenses.length} gastos</Text>
+            </View>
             <Text style={styles.hint}>de ejemplo</Text>
           </View>
-          <Pressable accessibilityRole="button" accessibilityLabel="Ver visión general de los gastos" onPress={() => navigation.navigate('Gastos')} style={styles.overview}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Ver visión general de los gastos"
+            onPress={() => navigation.navigate('Gastos')}
+            style={styles.overview}
+          >
             <Ionicons name="pie-chart-outline" size={19} color={colors.card} />
             <Text style={styles.overviewText}>VISIÓN GENERAL</Text>
             <Ionicons name="arrow-forward" size={18} color={colors.card} />
@@ -88,9 +112,6 @@ const styles = StyleSheet.create({
   lightOrbit: { position: 'absolute', width: 360, height: 360, borderRadius: 180, backgroundColor: '#0072E6', borderWidth: 1, borderColor: '#21B4FF', top: -295, left: -100 },
   heroTop: { minHeight: 30, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10 },
   eyebrow: { flexShrink: 1, color: colors.card, fontFamily: fonts.mono, fontSize: 9, letterSpacing: 1.2 },
-  demoBadge: { flexDirection: 'row', alignItems: 'center', gap: 7, borderWidth: 1, borderColor: '#678BCC', borderRadius: 99, paddingHorizontal: 12, paddingVertical: 7 },
-  dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#32EEA0' },
-  demoText: { color: colors.card, fontFamily: fonts.mono, fontSize: 10 },
   intro: { paddingTop: 20, gap: 12 },
   title: { color: colors.card, fontFamily: fonts.extraBold, fontSize: 36, lineHeight: 42, letterSpacing: -1.5 },
   description: { color: '#DCEAFF', fontFamily: fonts.regular, fontSize: 12, lineHeight: 19, maxWidth: 260 },

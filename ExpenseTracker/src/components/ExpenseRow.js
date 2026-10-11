@@ -12,10 +12,11 @@ const categoryStyles = {
 
 export default function ExpenseRow({ expense, onPress }) {
   const category = categoryStyles[expense.category] || categoryStyles.Otros;
+  const amount = formatAmount(expense.amount);
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={`Ver detalle de ${expense.name}, ${formatAmount(expense.amount)}`}
+      accessibilityLabel={`Ver detalle de ${expense.name}, ${amount}`}
       onPress={onPress}
       style={({ pressed }) => [localStyles.row, pressed && localStyles.pressed]}
     >
@@ -27,7 +28,7 @@ export default function ExpenseRow({ expense, onPress }) {
         <Text numberOfLines={1} style={localStyles.category}>{expense.category}</Text>
       </View>
       <View style={localStyles.numbers}>
-        <Text style={localStyles.amount}>{formatAmount(expense.amount)}</Text>
+        <Text style={localStyles.amount}>{amount}</Text>
         <Text style={localStyles.date}>{formatDate(expense.date)}</Text>
       </View>
       <Ionicons name="chevron-forward" size={18} color={colors.muted} />

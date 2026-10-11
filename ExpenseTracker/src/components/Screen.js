@@ -2,7 +2,15 @@ import { ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { styles } from '../styles';
 
-export default function Screen({ children, fullBleed = false, onScroll = undefined, onScrollBeginDrag = undefined, onWheel = undefined, onLayout = undefined, contentContainerStyle = undefined }) {
+export default function Screen({
+  children,
+  fullBleed = false,
+  onScroll = undefined,
+  onScrollBeginDrag = undefined,
+  onWheel = undefined,
+  onLayout = undefined,
+  contentContainerStyle = undefined,
+}) {
   return (
     <SafeAreaView style={styles.screen} edges={fullBleed ? ['left', 'right'] : ['left', 'right', 'bottom']}>
       <ScrollView

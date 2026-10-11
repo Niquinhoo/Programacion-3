@@ -21,14 +21,11 @@ export const fonts = {
   bold: 'PlusJakartaSans_700Bold',
   extraBold: 'PlusJakartaSans_800ExtraBold',
   mono: 'JetBrainsMono_500Medium',
-  monoBold: 'JetBrainsMono_700Bold',
 };
 
 export const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.background },
   content: { paddingHorizontal: 20, paddingTop: 24, paddingBottom: 28, gap: 22, width: '100%', maxWidth: 600, alignSelf: 'center' },
-  eyebrow: { fontFamily: fonts.monoBold, fontSize: 10, letterSpacing: 1.5, color: colors.primary },
-  title: { fontFamily: fonts.extraBold, fontSize: 30, lineHeight: 37, letterSpacing: -1.2, color: colors.text },
   subtitle: { fontFamily: fonts.bold, fontSize: 18, lineHeight: 24, letterSpacing: -0.4, color: colors.text },
   text: { fontFamily: fonts.regular, fontSize: 15, lineHeight: 23, color: colors.text },
   muted: { fontFamily: fonts.regular, fontSize: 14, lineHeight: 21, color: colors.muted },

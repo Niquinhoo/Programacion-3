@@ -10,20 +10,19 @@ export default function NewExpenseModal({ navigation }) {
   const [name, setName] = useState('');
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState(categories[0]);
-  const [message, setMessage] = useState('');
-  const [hasError, setHasError] = useState(false);
+  const [feedback, setFeedback] = useState({ message: '', hasError: false });
+  const { message, hasError } = feedback;
 
   function handleSave() {
-    const result = validateExpense({ name, amount, category });
-    setHasError(Boolean(result.error));
-    if (result.error) {
-      setMessage(result.error);
+    const { error, expense } = validateExpense({ name, amount, category });
+    if (error) {
+      setFeedback({ message: error, hasError: true });
       return;
     }
-    const expense = result.expense;
-    setMessage(
-      `Formulario enviado: ${expense.name} · ${formatAmount(expense.amount)} · ${expense.category}. Esta demo no guarda el gasto.`,
-    );
+    setFeedback({
+      message: `Formulario enviado: ${expense.name} · ${formatAmount(expense.amount)} · ${expense.category}. Esta demo no guarda el gasto.`,
+      hasError: false,
+    });
   }
 
   return (
@@ -61,26 +60,35 @@ export default function NewExpenseModal({ navigation }) {
         <View style={styles.field}>
           <Text style={styles.label}>Categoría</Text>
           <View style={localStyles.categories} accessibilityRole="radiogroup" accessibilityLabel="Categoría">
-            {categories.map((item) => (
-              <Pressable
-                key={item}
-                accessibilityRole="radio"
-                aria-checked={category === item}
-                onPress={() => setCategory(item)}
-                style={[localStyles.category, category === item && localStyles.selected]}
-              >
-                <Text style={[localStyles.categoryText, category === item && localStyles.selectedText]}>
-                  {item}
-                </Text>
-              </Pressable>
-            ))}
+            {categories.map((item) => {
+              const selected = category === item;
+              return (
+                <Pressable
+                  key={item}
+                  accessibilityRole="radio"
+                  aria-checked={selected}
+                  onPress={() => setCategory(item)}
+                  style={[localStyles.category, selected && localStyles.selected]}
+                >
+                  <Text style={[localStyles.categoryText, selected && localStyles.selectedText]}>
+                    {item}
+                  </Text>
+                </Pressable>
+              );
+            })}
           </View>
         </View>
       </View>
       <ActionButton title="Guardar" onPress={handleSave} />
       {Boolean(message) && (
         <View style={[localStyles.message, hasError ? localStyles.error : localStyles.success]}>
-          <Text accessibilityRole="alert" accessibilityLiveRegion="polite" style={[styles.text, { color: hasError ? colors.notification : colors.success }]}>{message}</Text>
+          <Text
+            accessibilityRole="alert"
+            accessibilityLiveRegion="polite"
+            style={[styles.text, { color: hasError ? colors.notification : colors.success }]}
+          >
+            {message}
+          </Text>
         </View>
       )}
     </ExpenseSheet>
