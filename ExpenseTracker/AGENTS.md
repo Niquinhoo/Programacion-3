@@ -5,6 +5,7 @@
 - Usar React Navigation con `TabNavigator` y `StackNavigator`, como exige US6.
 - Mantener pantallas, componentes, navegación y recursos separados en `src/`.
 - No agregar persistencia, Context ni APIs remotas en este sprint.
+- Mantener `colors.primary` (`#0057FF`) como color de acciones y selecciones en todo el proyecto. No usar gradientes.
 - Instalar dependencias con `npx expo install` para respetar la compatibilidad del SDK.
 - Consultar la documentación de la versión de Expo instalada antes de cambiar sus APIs.
 - Antes de terminar, ejecutar `npm test`, `npm run lint`, `npm run typecheck` y `npx expo-doctor`.

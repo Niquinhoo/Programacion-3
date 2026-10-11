@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { categories, expenses } from '../src/data/expenses.js';
-import { formatAmount, validateExpense } from '../src/utils/expense.js';
+import { filterExpenses, formatAmount, formatDate, validateExpense } from '../src/utils/expense.js';
 
 const input = { name: '  Supermercado  ', amount: '25000,50', category: categories[0] };
 assert.deepEqual(validateExpense(input).expense, {
@@ -19,4 +19,22 @@ assert.equal(new Set(expenses.map((expense) => expense.id)).size, expenses.lengt
 assert.ok(expenses.every((expense) => categories.includes(expense.category)));
 assert.match(formatAmount(25000), /25\.000/);
 assert.match(formatAmount(25000.5), /25\.000,50/);
-console.log('OK: formulario, montos ARS y gastos de ejemplo.');
+assert.match(formatDate('2026-10-10'), /^10 oct\.? 2026$/);
+const movements = [
+  { id: 'a', name: 'Café', category: 'Otros', date: '2026-10-11' },
+  { id: 'b', name: 'Supermercado', category: 'Alimentos', date: '2026-10-08' },
+  { id: 'c', name: 'Internet', category: 'Servicios', date: '2026-10-04' },
+  { id: 'd', name: 'Café', category: 'Otros', date: '2026-09-30' },
+  { id: 'e', name: 'Combustible', category: 'Transporte', date: '2026-10-12' },
+];
+const today = new Date(2026, 9, 11, 23, 30);
+assert.deepEqual(filterExpenses(movements, { query: ' CAFE ' }, today).map(item => item.id), ['a', 'd']);
+assert.deepEqual(filterExpenses(movements, { query: 'servicios' }, today).map(item => item.id), ['c']);
+assert.deepEqual(filterExpenses(movements, { period: 'Hoy' }, today).map(item => item.id), ['a']);
+assert.deepEqual(filterExpenses(movements, { period: 'Semana' }, today).map(item => item.id), ['a', 'b']);
+assert.deepEqual(filterExpenses(movements, { period: 'Mes', category: 'Otros' }, today).map(item => item.id), ['a']);
+assert.deepEqual(filterExpenses(movements, { query: 'inexistente' }, today), []);
+assert.deepEqual(filterExpenses(movements, {}, today), movements);
+assert.deepEqual(filterExpenses(movements, { period: 'Mes' }, new Date(2027, 9, 11)), []);
+assert.deepEqual(filterExpenses(movements, { period: 'Semana' }, new Date(2026, 9, 12)).map(item => item.id), ['e']);
+console.log('OK: formulario, montos ARS, gastos de ejemplo, búsqueda y filtros.');

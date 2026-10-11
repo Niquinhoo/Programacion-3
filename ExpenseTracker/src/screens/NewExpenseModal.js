@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import Screen from '../components/Screen';
+import ExpenseSheet from '../components/ExpenseSheet';
 import ActionButton from '../components/ActionButton';
 import { categories } from '../data/expenses';
 import { formatAmount, validateExpense } from '../utils/expense';
-import { colors, styles } from '../styles';
+import { colors, fonts, styles } from '../styles';
 
-export default function NewExpenseModal() {
+export default function NewExpenseModal({ navigation }) {
   const [name, setName] = useState('');
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState(categories[0]);
@@ -27,82 +27,84 @@ export default function NewExpenseModal() {
   }
 
   return (
-    <Screen>
-      <Text style={styles.title}>Cargá un gasto</Text>
-      <Text style={styles.muted}>Completá los datos para probar el formulario.</Text>
-      <View style={styles.field}>
-        <Text nativeID="name-label" style={styles.label}>Nombre</Text>
-        <TextInput
-          accessibilityLabel="Nombre del gasto"
-          accessibilityLabelledBy="name-label"
-          style={styles.input}
-          value={name}
-          onChangeText={setName}
-          placeholder="Ej.: Supermercado"
-          placeholderTextColor={colors.muted}
-          maxLength={100}
-          autoCapitalize="sentences"
-        />
-      </View>
-      <View style={styles.field}>
-        <Text nativeID="amount-label" style={styles.label}>Monto (ARS)</Text>
-        <TextInput
-          accessibilityLabel="Monto del gasto en pesos argentinos"
-          accessibilityLabelledBy="amount-label"
-          style={styles.input}
-          value={amount}
-          onChangeText={setAmount}
-          placeholder="Ej.: 25000,50"
-          placeholderTextColor={colors.muted}
-          keyboardType="decimal-pad"
-          maxLength={18}
-        />
-        <Text style={styles.muted}>Usá coma o punto para decimales, sin separar miles.</Text>
-      </View>
-      <View style={styles.field}>
-        <Text style={styles.label}>Categoría</Text>
-        <View style={localStyles.categories} accessibilityRole="radiogroup" accessibilityLabel="Categoría">
-          {categories.map((item) => (
-            <Pressable
-              key={item}
-              accessibilityRole="radio"
-              aria-checked={category === item}
-              onPress={() => setCategory(item)}
-              style={[localStyles.category, category === item && localStyles.selected]}
-            >
-              <Text style={[styles.text, category === item && localStyles.selectedText]}>
-                {item}
-              </Text>
-            </Pressable>
-          ))}
+    <ExpenseSheet title="Nuevo gasto" navigation={navigation}>
+      <Text style={localStyles.title}>Cargá un gasto</Text>
+      <View style={localStyles.fields}>
+        <View style={styles.field}>
+          <Text nativeID="name-label" style={styles.label}>Nombre</Text>
+          <TextInput
+            accessibilityLabel="Nombre del gasto"
+            accessibilityLabelledBy="name-label"
+            style={styles.input}
+            value={name}
+            onChangeText={setName}
+            placeholder="Ej.: Supermercado"
+            placeholderTextColor={colors.muted}
+            maxLength={100}
+            autoCapitalize="sentences"
+          />
+        </View>
+        <View style={styles.field}>
+          <Text nativeID="amount-label" style={styles.label}>Monto (ARS)</Text>
+          <TextInput
+            accessibilityLabel="Monto del gasto en pesos argentinos"
+            accessibilityLabelledBy="amount-label"
+            style={styles.input}
+            value={amount}
+            onChangeText={setAmount}
+            placeholder="Ej.: 25000,50"
+            placeholderTextColor={colors.muted}
+            keyboardType="decimal-pad"
+            maxLength={18}
+          />
+        </View>
+        <View style={styles.field}>
+          <Text style={styles.label}>Categoría</Text>
+          <View style={localStyles.categories} accessibilityRole="radiogroup" accessibilityLabel="Categoría">
+            {categories.map((item) => (
+              <Pressable
+                key={item}
+                accessibilityRole="radio"
+                aria-checked={category === item}
+                onPress={() => setCategory(item)}
+                style={[localStyles.category, category === item && localStyles.selected]}
+              >
+                <Text style={[localStyles.categoryText, category === item && localStyles.selectedText]}>
+                  {item}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
         </View>
       </View>
       <ActionButton title="Guardar" onPress={handleSave} />
       {Boolean(message) && (
-        <Text
-          accessibilityRole="alert"
-          accessibilityLiveRegion="polite"
-          style={[styles.text, { color: hasError ? colors.notification : colors.primary }]}
-        >
-          {message}
-        </Text>
+        <View style={[localStyles.message, hasError ? localStyles.error : localStyles.success]}>
+          <Text accessibilityRole="alert" accessibilityLiveRegion="polite" style={[styles.text, { color: hasError ? colors.notification : colors.success }]}>{message}</Text>
+        </View>
       )}
-    </Screen>
+    </ExpenseSheet>
   );
 }
 
 const localStyles = StyleSheet.create({
-  categories: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  title: { color: colors.text, fontFamily: fonts.extraBold, fontSize: 26, lineHeight: 33, letterSpacing: -0.8 },
+  fields: { gap: 16 },
+  categories: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   category: {
-    minHeight: 48,
-    paddingVertical: 10,
-    paddingHorizontal: 14,
+    minHeight: 44,
+    paddingVertical: 9,
+    paddingHorizontal: 12,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 24,
-    backgroundColor: colors.card,
+    borderRadius: 99,
+    backgroundColor: colors.surfaceSoft,
     justifyContent: 'center',
   },
+  categoryText: { color: colors.muted, fontFamily: fonts.semiBold, fontSize: 12 },
   selected: { backgroundColor: colors.primary, borderColor: colors.primary },
-  selectedText: { color: '#FFFFFF' },
+  selectedText: { color: colors.card },
+  message: { borderRadius: 16, borderWidth: 1, padding: 14 },
+  error: { backgroundColor: '#FEF2F2', borderColor: '#FECACA' },
+  success: { backgroundColor: '#F0FDF4', borderColor: '#BBF7D0' },
 });
