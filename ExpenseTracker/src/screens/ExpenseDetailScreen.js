@@ -16,12 +16,21 @@ export default function ExpenseDetailScreen({ route, navigation }) {
             <Text style={styles.label}>MONTO</Text>
             <Text style={styles.amount}>{formatAmount(expense.amount)}</Text>
             <View style={localStyles.divider} />
-            <View style={localStyles.row}><Text style={styles.label}>CATEGORÍA</Text><Text style={localStyles.category}>{expense.category}</Text></View>
-            <View style={localStyles.row}><Text style={styles.label}>FECHA</Text><Text style={styles.muted}>{formatDate(expense.date)}</Text></View>
+            <View style={localStyles.row}>
+              <Text style={styles.label}>CATEGORÍA</Text>
+              <Text style={localStyles.category}>{expense.category}</Text>
+            </View>
+            <View style={localStyles.row}>
+              <Text style={styles.label}>FECHA</Text>
+              <Text style={styles.muted}>{formatDate(expense.date)}</Text>
+            </View>
           </View>
         </>
       ) : (
-        <View style={styles.card}><Text style={styles.subtitle}>No se encontró el gasto</Text><Text style={styles.muted}>Volvé a la lista para elegir otro movimiento.</Text></View>
+        <View style={styles.card}>
+          <Text style={styles.subtitle}>No se encontró el gasto</Text>
+          <Text style={styles.muted}>Volvé a la lista para elegir otro movimiento.</Text>
+        </View>
       )}
     </ExpenseSheet>
   );

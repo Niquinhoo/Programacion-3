@@ -10,6 +10,17 @@ export async function verifyHeroTransition(tab) {
   const { nodeId } = await cdp.send('DOM.querySelector', { nodeId: root.nodeId, selector: '[data-testid="expense-hero"]' });
   const height = async () => (await cdp.send('DOM.getBoxModel', { nodeId })).model.height;
 
+  let previousHeight;
+  let stableSince = Date.now();
+  const deadline = Date.now() + 1500;
+  do {
+    const currentHeight = await height();
+    if (currentHeight !== previousHeight) stableSince = Date.now();
+    previousHeight = currentHeight;
+  } while (Date.now() - stableSince < 150 && Date.now() < deadline);
+  assert.ok(Date.now() - stableSince >= 150, 'Inicio debe estabilizarse antes de medir la transición.');
+  assert.doesNotMatch(await hero.innerText(), /DEMO/, 'El hero de Inicio no debe mostrar DEMO.');
+
   async function switchTo(name) {
     const frames = [await height()];
     await tab.playwright.getByRole('tab', { name, exact: true }).click();
@@ -26,6 +37,7 @@ export async function verifyHeroTransition(tab) {
 
   const collapse = await switchTo('Gastos');
   assert.ok(collapse.last < collapse.first, 'Gastos debe contraer el hero.');
+  assert.doesNotMatch(await hero.innerText(), /DEMO/, 'El hero de Gastos no debe mostrar DEMO.');
   const expand = await switchTo('Inicio');
   assert.ok(expand.last > expand.first, 'Inicio debe desplegar el hero.');
   assert.ok(Math.abs(expand.last - collapse.first) < 1, 'Volver a Inicio debe recuperar la altura original.');

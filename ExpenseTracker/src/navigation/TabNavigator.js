@@ -18,14 +18,23 @@ function renderTabLayout(props) {
 }
 
 function TabLayout({ children, state, navigation }) {
-  const route = state.routes[state.index].name;
+  const route = state.routes[state.index];
+  const isHome = route.name === 'Inicio';
+  const isSettings = route.name === 'Ajustes';
   const [layout, setLayout] = useState({ width: 0, height: 0 });
   const onHeroTransitionComplete = useCallback(() => navigation.setParams({ heroTransitionComplete: true }), [navigation]);
   return (
     <View style={localStyles.layout}>
-      {route !== 'Ajustes' && <ExpenseHero expanded={route === 'Inicio'} collapsed={route === 'Inicio' && Boolean(state.routes[state.index].params?.heroCollapsed)} navigation={navigation} onAnimationComplete={onHeroTransitionComplete} />}
+      {!isSettings && (
+        <ExpenseHero
+          expanded={isHome}
+          collapsed={isHome && Boolean(route.params?.heroCollapsed)}
+          navigation={navigation}
+          onAnimationComplete={onHeroTransitionComplete}
+        />
+      )}
       <View style={localStyles.scenes} onLayout={({ nativeEvent }) => setLayout(nativeEvent.layout)}>
-        <NewExpenseButton expanded={route === 'Inicio'} navigation={navigation} layout={layout} />
+        {!isSettings && <NewExpenseButton expanded={isHome} navigation={navigation} layout={layout} />}
         {children}
       </View>
     </View>

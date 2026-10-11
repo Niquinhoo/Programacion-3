@@ -51,6 +51,9 @@ export async function verifyExpenseSheets(tab) {
   await tab.playwright.getByRole('radio', { name: 'Otros', exact: true }).click();
   await tab.playwright.getByRole('button', { name: 'Guardar', exact: true }).click();
   assert.match(await tab.playwright.getByRole('alert').innerText(), /25\.000,50.*Otros.*no guarda/);
+  await tab.playwright.getByPlaceholder('Ej.: 25000,50').fill('0');
+  await tab.playwright.getByRole('button', { name: 'Guardar', exact: true }).click();
+  assert.match(await tab.playwright.getByRole('alert').innerText(), /mayor que cero/, 'Un envío inválido debe reemplazar la confirmación anterior.');
   await tab.playwright.getByRole('button', { name: 'Volver', exact: true }).click();
   await sheet.waitFor({ state: 'detached' });
   assert.equal(await search.evaluate(el => el.value), 'Supermercado');

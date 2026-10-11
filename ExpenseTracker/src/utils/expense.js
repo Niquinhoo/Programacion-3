@@ -6,36 +6,45 @@ const currency = new Intl.NumberFormat('es-AR', {
   minimumFractionDigits: 2,
   maximumFractionDigits: 2,
 });
+const dateFormatter = new Intl.DateTimeFormat('es-AR', {
+  day: 'numeric', month: 'short', year: 'numeric',
+});
+
+function normalize(value) {
+  return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+}
 
 export function formatAmount(amount) {
   return currency.format(amount).replace(/,00$/, '');
 }
 
 export function formatDate(date) {
-  return new Intl.DateTimeFormat('es-AR', { day: 'numeric', month: 'short', year: 'numeric' })
-    .format(new Date(`${date}T12:00:00`)).replace(/ de /g, ' ');
+  return dateFormatter.format(new Date(`${date}T12:00:00`)).replace(/ de /g, ' ');
 }
 
 export function filterExpenses(items, { query = '', period = 'Todos', category = '' }, today = new Date()) {
-  const normalize = (value) => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
   const search = normalize(query.trim());
   const day = new Date(today.getFullYear(), today.getMonth(), today.getDate());
   const monday = new Date(day);
-  monday.setDate(day.getDate() - (day.getDay() + 6) % 7);
+  monday.setDate(day.getDate() - ((day.getDay() + 6) % 7));
 
   return items.filter((expense) => {
     if (category && expense.category !== category) return false;
-    if (!normalize(`${expense.name} ${expense.category}`).includes(search)) return false;
+    if (search && !normalize(`${expense.name} ${expense.category}`).includes(search)) return false;
+    if (period === 'Todos') return true;
     const date = new Date(`${expense.date}T00:00:00`);
     if (period === 'Hoy') return date.getTime() === day.getTime();
     if (period === 'Semana') return date >= monday && date <= day;
-    if (period === 'Mes') return date.getMonth() === day.getMonth() && date.getFullYear() === day.getFullYear();
+    if (period === 'Mes') {
+      return date.getMonth() === day.getMonth() && date.getFullYear() === day.getFullYear();
+    }
     return true;
   });
 }
 
 export function validateExpense({ name, amount, category }) {
-  if (!name.trim()) return { error: 'Ingresá el nombre del gasto.' };
+  const trimmedName = name.trim();
+  if (!trimmedName) return { error: 'Ingresá el nombre del gasto.' };
 
   const value = amount.trim();
   if (!/^\d+(?:[.,]\d{1,2})?$/.test(value)) {
@@ -49,5 +58,5 @@ export function validateExpense({ name, amount, category }) {
   }
   if (!categories.includes(category)) return { error: 'Seleccioná una categoría válida.' };
 
-  return { expense: { name: name.trim(), amount: cents / 100, category } };
+  return { expense: { name: trimmedName, amount: cents / 100, category } };
 }

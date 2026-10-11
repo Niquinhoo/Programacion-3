@@ -43,13 +43,28 @@ export default function SettingsScreen() {
             <View style={localStyles.group}>
               {group.title === 'CUENTA' && (
                 <View style={localStyles.profile}>
-                  <View style={localStyles.avatar}><Text style={localStyles.initial}>N</Text></View>
-                  <View style={localStyles.profileText}><Text style={localStyles.profileName}>Nicolás</Text><Text style={localStyles.profileHint}>Modo demostración</Text></View>
+                  <View style={localStyles.avatar}>
+                    <Text style={localStyles.initial}>N</Text>
+                  </View>
+                  <View style={localStyles.profileText}>
+                    <Text style={localStyles.profileName}>Nicolás</Text>
+                    <Text style={localStyles.profileHint}>Modo demostración</Text>
+                  </View>
                   <Text style={localStyles.demo}>DEMO</Text>
                 </View>
               )}
               {group.rows.map((row, index) => (
-                <Pressable key={row.label} accessibilityRole="button" accessibilityLabel={[row.label, row.value].filter(Boolean).join(', ')} onPress={() => setMessage(row.message)} style={({ pressed }) => [localStyles.row, (index > 0 || group.title === 'CUENTA') && localStyles.divider, pressed && localStyles.pressed]}>
+                <Pressable
+                  key={row.label}
+                  accessibilityRole="button"
+                  accessibilityLabel={[row.label, row.value].filter(Boolean).join(', ')}
+                  onPress={() => setMessage(row.message)}
+                  style={({ pressed }) => [
+                    localStyles.row,
+                    (index > 0 || group.title === 'CUENTA') && localStyles.divider,
+                    pressed && localStyles.pressed,
+                  ]}
+                >
                   <Ionicons name={row.icon} size={20} color={colors.muted} />
                   <Text style={localStyles.rowLabel}>{row.label}</Text>
                   {row.value && <Text style={localStyles.value}>{row.value}</Text>}
@@ -59,12 +74,26 @@ export default function SettingsScreen() {
             </View>
           </View>
         ))}
-        <Pressable accessibilityRole="button" accessibilityLabel="Cerrar sesión" onPress={() => setMessage('Esta demo no tiene una sesión activa ni requiere iniciar sesión.')} style={({ pressed }) => [localStyles.logout, pressed && localStyles.pressed]}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Cerrar sesión"
+          onPress={() => setMessage('Esta demo no tiene una sesión activa ni requiere iniciar sesión.')}
+          style={({ pressed }) => [localStyles.logout, pressed && localStyles.pressed]}
+        >
           <Ionicons name="log-out-outline" size={21} color={colors.primary} />
           <Text style={localStyles.logoutLabel}>Cerrar sesión</Text>
           <Ionicons name="chevron-forward" size={15} color={colors.primary} />
         </Pressable>
-        {Boolean(message) && <View style={styles.card}><Text accessibilityRole="alert" accessibilityLiveRegion="polite" style={styles.muted}>{message}</Text><Pressable accessibilityRole="button" onPress={() => setMessage('')} style={localStyles.dismiss}><Text style={localStyles.logoutLabel}>Entendido</Text></Pressable></View>}
+        {Boolean(message) && (
+          <View style={styles.card}>
+            <Text accessibilityRole="alert" accessibilityLiveRegion="polite" style={styles.muted}>
+              {message}
+            </Text>
+            <Pressable accessibilityRole="button" onPress={() => setMessage('')} style={localStyles.dismiss}>
+              <Text style={localStyles.logoutLabel}>Entendido</Text>
+            </Pressable>
+          </View>
+        )}
       </View>
     </Screen>
   );

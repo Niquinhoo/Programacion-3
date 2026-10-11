@@ -1,24 +1,18 @@
 import { useEffect, useRef, useState } from 'react';
-import { AccessibilityInfo, Animated, Easing, Pressable, StyleSheet } from 'react-native';
+import { Animated, Easing, Pressable, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { colors, fonts } from '../styles';
+import useReduceMotion from '../hooks/useReduceMotion';
 
 export default function NewExpenseButton({ expanded, navigation, layout }) {
   const insets = useSafeAreaInsets();
   const [progress] = useState(() => new Animated.Value(expanded ? 1 : 0));
   const [jump] = useState(() => new Animated.Value(0));
-  const [reduceMotion, setReduceMotion] = useState(true);
+  const reduceMotion = useReduceMotion();
   const previousExpanded = useRef(expanded);
   const width = Math.max(56, Math.min(layout.width, 600) - 32 - insets.left - insets.right);
   const interpolate = (collapsed, open) => progress.interpolate({ inputRange: [0, 1], outputRange: [collapsed, open] });
-
-  useEffect(() => {
-    let active = true;
-    AccessibilityInfo.isReduceMotionEnabled().then(value => { if (active) setReduceMotion(value); }).catch(() => {});
-    const subscription = AccessibilityInfo.addEventListener('reduceMotionChanged', setReduceMotion);
-    return () => { active = false; subscription.remove(); };
-  }, []);
 
   useEffect(() => {
     if (previousExpanded.current === expanded) {
@@ -33,9 +27,25 @@ export default function NewExpenseButton({ expanded, navigation, layout }) {
       return;
     }
     const animation = Animated.sequence([
-      Animated.timing(progress, { toValue: expanded ? 1 : 0, duration: 360, easing: Easing.inOut(Easing.cubic), useNativeDriver: false }),
-      Animated.timing(jump, { toValue: expanded ? -8 : -14, duration: 110, easing: Easing.out(Easing.quad), useNativeDriver: false }),
-      Animated.spring(jump, { toValue: 0, stiffness: 220, damping: 14, mass: 0.5, useNativeDriver: false }),
+      Animated.timing(progress, {
+        toValue: expanded ? 1 : 0,
+        duration: 360,
+        easing: Easing.inOut(Easing.cubic),
+        useNativeDriver: false,
+      }),
+      Animated.timing(jump, {
+        toValue: expanded ? -8 : -14,
+        duration: 110,
+        easing: Easing.out(Easing.quad),
+        useNativeDriver: false,
+      }),
+      Animated.spring(jump, {
+        toValue: 0,
+        stiffness: 220,
+        damping: 14,
+        mass: 0.5,
+        useNativeDriver: false,
+      }),
     ]);
     animation.start();
     return () => animation.stop();
@@ -55,10 +65,21 @@ export default function NewExpenseButton({ expanded, navigation, layout }) {
           transform: [{ translateY: jump }],
         }]}
       >
-        <Pressable accessibilityRole="button" accessibilityLabel={expanded ? 'Cargar un gasto' : 'Nuevo gasto'} onPress={() => navigation.navigate('NuevoGasto')} style={({ pressed }) => [styles.touch, pressed && styles.pressed]}>
-          <Animated.View aria-hidden style={[styles.plus, { left: interpolate(13, 20) }]}><Ionicons name="add" size={30} color={colors.card} /></Animated.View>
-          <Animated.Text aria-hidden style={[styles.label, { opacity: progress }]} numberOfLines={1}>Cargar un gasto</Animated.Text>
-          <Animated.View aria-hidden style={[styles.arrow, { opacity: progress }]}><Ionicons name="arrow-forward" size={22} color={colors.card} /></Animated.View>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={expanded ? 'Cargar un gasto' : 'Nuevo gasto'}
+          onPress={() => navigation.navigate('NuevoGasto')}
+          style={({ pressed }) => [styles.touch, pressed && styles.pressed]}
+        >
+          <Animated.View aria-hidden style={[styles.plus, { left: interpolate(13, 20) }]}>
+            <Ionicons name="add" size={30} color={colors.card} />
+          </Animated.View>
+          <Animated.Text aria-hidden style={[styles.label, { opacity: progress }]} numberOfLines={1}>
+            Cargar un gasto
+          </Animated.Text>
+          <Animated.View aria-hidden style={[styles.arrow, { opacity: progress }]}>
+            <Ionicons name="arrow-forward" size={22} color={colors.card} />
+          </Animated.View>
         </Pressable>
       </Animated.View>
     </Animated.View>
