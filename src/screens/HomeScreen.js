@@ -5,6 +5,7 @@ import { useIsFocused } from '@react-navigation/native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Screen from '../components/Screen';
 import ExpenseRow from '../components/ExpenseRow';
+import { HERO_STABLE_MS } from '../components/ExpenseHero';
 import { expenses } from '../data/expenses';
 import { colors, fonts } from '../styles';
 
@@ -13,14 +14,22 @@ export default function HomeScreen({ navigation, route }) {
   const [scrollHeight, setScrollHeight] = useState(0);
   const dragStartedCollapsed = useRef(false);
   const scrollY = useRef(0);
+  const scrollLockedUntil = useRef(0);
   const heroCollapsed = Boolean(route.params?.heroCollapsed);
   const heroTransitioning = heroCollapsed && !route.params?.heroTransitionComplete;
+
+  function requestHero(collapsed) {
+    if (!isFocused || collapsed === heroCollapsed || route.params?.heroTransitionComplete === false) return;
+    if (Date.now() < Math.max(scrollLockedUntil.current, route.params?.heroLockedUntil ?? 0)) return;
+    scrollLockedUntil.current = Date.now() + HERO_STABLE_MS;
+    navigation.setParams({ heroCollapsed: collapsed });
+  }
 
   function handleScrollBeginDrag({ nativeEvent }) {
     if (!isFocused) return;
     dragStartedCollapsed.current = heroCollapsed;
     if (heroCollapsed && nativeEvent.contentOffset.y <= 0) {
-      navigation.setParams({ heroCollapsed: false, heroTransitionComplete: false });
+      requestHero(false);
     }
   }
 
@@ -31,7 +40,7 @@ export default function HomeScreen({ navigation, route }) {
     if (y <= 0 && heroCollapsed && !dragStartedCollapsed.current) return;
     const collapsed = y > 0;
     if (collapsed === heroCollapsed) return;
-    navigation.setParams({ heroCollapsed: collapsed, heroTransitionComplete: false });
+    requestHero(collapsed);
   }
 
   function handleWheel({ nativeEvent }) {
@@ -42,7 +51,7 @@ export default function HomeScreen({ navigation, route }) {
     }
     if (!heroCollapsed || nativeEvent.deltaY >= 0) return;
     dragStartedCollapsed.current = true;
-    if (scrollY.current <= 0) navigation.setParams({ heroCollapsed: false, heroTransitionComplete: false });
+    if (scrollY.current <= 0) requestHero(false);
   }
 
   // shortcut: reserva 264 px al contraer para evitar oscilaciones; ajustar si cambia la altura del hero.

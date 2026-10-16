@@ -11,7 +11,9 @@ export async function verifyHeroScroll(tab) {
     const rect = scroll.getBoundingClientRect();
     const hero = document.querySelector('[data-testid="expense-hero"]').getBoundingClientRect();
     const rows = [...scroll.querySelectorAll('[role="button"]')].filter(row => row.getAttribute('aria-label')?.startsWith('Ver detalle'));
-    return { height: hero.height, bottom: hero.bottom, y: scroll.scrollTop, x: rect.x + rect.width / 2, wheelY: rect.y + Math.min(80, rect.height / 2), viewportHeight: rect.height, top: rect.top, rows: rows.map(row => { const r = row.getBoundingClientRect(); return { top: r.top, bottom: r.bottom }; }), viewportBottom: rect.bottom };
+    const tabs = document.querySelector('[role="tablist"]');
+    const bar = tabs.getBoundingClientRect();
+    return { height: hero.height, bottom: hero.bottom, y: scroll.scrollTop, x: rect.x + rect.width / 2, wheelY: rect.y + Math.min(80, rect.height / 2), viewportHeight: rect.height, top: rect.top, rows: rows.map(row => { const r = row.getBoundingClientRect(); return { top: r.top, bottom: r.bottom }; }), viewportBottom: rect.bottom, bar: { top: bar.top, height: bar.height }, tabs: [...tabs.querySelectorAll('[role="tab"]')].map(el => { const r = el.getBoundingClientRect(); return { x: r.x, width: r.width, direction: getComputedStyle(el).flexDirection }; }) };
   });
   async function scrollBy(deltaY) {
     const state = await snapshot();
@@ -32,12 +34,20 @@ export async function verifyHeroScroll(tab) {
   assert.ok(collapsed.viewportHeight > expanded.viewportHeight + 100, 'La contracción debe liberar espacio real para los movimientos.');
   assert.ok(collapsed.top >= collapsed.bottom - 1, 'Los movimientos no deben quedar detrás del hero.');
   assert.ok(collapsed.rows.length === 3 && collapsed.rows.every(row => row.top >= collapsed.top && row.bottom <= collapsed.viewportBottom), 'Los tres movimientos deben quedar visibles.');
+  assert.deepEqual(collapsed.bar, expanded.bar, 'La barra inferior debe conservar su altura y posición.');
+  assert.deepEqual(collapsed.tabs, expanded.tabs, 'Los tabs deben conservar distribución y orientación al contraer el hero.');
+  assert.ok(collapsed.tabs.every(item => item.direction === 'column'), 'Las etiquetas deben permanecer debajo de los iconos.');
   assert.match(await tab.playwright.getByTestId('expense-hero').innerText(), /TOTAL DE GASTOS/);
   assert.equal(await tab.playwright.getByRole('button', { name: 'Ver visión general de los gastos', exact: true }).count(), 0, 'La acción oculta no debe quedar accesible.');
 
   await scrollBy(1000);
   assert.ok(Math.abs((await snapshot()).height - collapsed.height) < 1, 'Llegar al final no debe reexpandir el hero por el cambio de altura.');
+  await scrollBy(-1000);
+  assert.ok(Math.abs((await snapshot()).height - collapsed.height) < 1, 'El hero debe ignorar el gesto opuesto durante los 3,5 segundos de permanencia.');
+  await new Promise(resolve => setTimeout(resolve, 3600));
   const restored = (await scrollBy(-1000)).at(-1);
   assert.ok(Math.abs(restored.height - expanded.height) < 1, 'Volver arriba debe expandir el hero.');
+  await scrollBy(40);
+  assert.ok(Math.abs((await snapshot()).height - expanded.height) < 1, 'El hero también debe permanecer expandido durante el bloqueo.');
   return { expandedHeight: expanded.height, collapsedHeight: collapsed.height };
 }

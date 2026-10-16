@@ -1,4 +1,5 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { CommonActions } from '@react-navigation/native';
 import { useCallback, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -21,8 +22,12 @@ function TabLayout({ children, state, navigation }) {
   const route = state.routes[state.index];
   const isHome = route.name === 'Inicio';
   const isSettings = route.name === 'Ajustes';
+  const homeKey = state.routes.find(item => item.name === 'Inicio').key;
   const [layout, setLayout] = useState({ width: 0, height: 0 });
-  const onHeroTransitionComplete = useCallback(() => navigation.setParams({ heroTransitionComplete: true }), [navigation]);
+  const onHeroTransitionChange = useCallback(({ complete, lockedUntil }) => navigation.dispatch({
+    ...CommonActions.setParams({ heroTransitionComplete: complete, heroLockedUntil: lockedUntil }),
+    source: homeKey,
+  }), [navigation, homeKey]);
   return (
     <View style={localStyles.layout}>
       {!isSettings && (
@@ -30,7 +35,7 @@ function TabLayout({ children, state, navigation }) {
           expanded={isHome}
           collapsed={isHome && Boolean(route.params?.heroCollapsed)}
           navigation={navigation}
-          onAnimationComplete={onHeroTransitionComplete}
+          onTransitionChange={onHeroTransitionChange}
         />
       )}
       <View style={localStyles.scenes} onLayout={({ nativeEvent }) => setLayout(nativeEvent.layout)}>
@@ -58,6 +63,7 @@ export default function TabNavigator() {
         ),
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.muted,
+        tabBarLabelPosition: 'below-icon',
         tabBarLabelStyle: { fontSize: 11, fontFamily: fonts.semiBold, marginTop: 3 },
         tabBarItemStyle: { paddingTop: 8, paddingBottom: 6 },
         tabBarStyle: { backgroundColor: colors.card, borderTopWidth: 0, borderTopLeftRadius: 28, borderTopRightRadius: 28, height: 72 + insets.bottom, paddingBottom: insets.bottom, elevation: 0 },

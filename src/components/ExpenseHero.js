@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -7,27 +7,54 @@ import { filterExpenses, formatAmount } from '../utils/expense';
 import useReduceMotion from '../hooks/useReduceMotion';
 import { colors, fonts } from '../styles';
 
-export default function ExpenseHero({ expanded, collapsed = false, navigation, onAnimationComplete }) {
+export const HERO_STABLE_MS = 3500;
+
+export default function ExpenseHero({ expanded, collapsed = false, navigation, onTransitionChange }) {
   const insets = useSafeAreaInsets();
-  const showDetails = expanded && !collapsed;
+  const requestedDetails = expanded && !collapsed;
+  const [transition, setTransition] = useState({ details: requestedDetails, phase: 'idle' });
+  const showDetails = transition.details;
   const [progress] = useState(() => new Animated.Value(showDetails ? 1 : 0));
   const reduceMotion = useReduceMotion();
+  const animationOptions = useRef({ reduceMotion, onTransitionChange });
   const [introHeight, setIntroHeight] = useState(154);
   const [footerHeight, setFooterHeight] = useState(64);
   const items = expanded ? expenses : filterExpenses(expenses, { period: 'Mes' });
   const total = items.reduce((sum, expense) => sum + expense.amount, 0);
   const interpolate = (collapsed, open) => progress.interpolate({ inputRange: [0, 1], outputRange: [collapsed, open] });
 
+  if (transition.phase === 'idle' && transition.details !== requestedDetails) {
+    setTransition({ details: requestedDetails, phase: 'animating' });
+  }
+
   useEffect(() => {
+    animationOptions.current = { reduceMotion, onTransitionChange };
+  }, [reduceMotion, onTransitionChange]);
+
+  useEffect(() => {
+    if (transition.phase === 'idle') {
+      animationOptions.current.onTransitionChange({ complete: true, lockedUntil: 0 });
+      return;
+    }
+    if (transition.phase === 'holding') {
+      const timeout = setTimeout(() => setTransition({ ...transition, phase: 'idle' }), HERO_STABLE_MS);
+      return () => clearTimeout(timeout);
+    }
+
+    animationOptions.current.onTransitionChange({ complete: false, lockedUntil: 0 });
     const animation = Animated.timing(progress, {
-      toValue: showDetails ? 1 : 0,
-      duration: reduceMotion ? 0 : 360,
+      toValue: transition.details ? 1 : 0,
+      duration: animationOptions.current.reduceMotion ? 0 : 360,
       easing: Easing.inOut(Easing.cubic),
       useNativeDriver: false,
     });
-    animation.start(({ finished }) => finished && onAnimationComplete());
+    animation.start(({ finished }) => {
+      if (!finished) return;
+      setTransition({ ...transition, phase: 'holding' });
+      animationOptions.current.onTransitionChange({ complete: true, lockedUntil: Date.now() + HERO_STABLE_MS });
+    });
     return () => animation.stop();
-  }, [showDetails, progress, reduceMotion, onAnimationComplete]);
+  }, [transition, progress]);
 
   return (
     <View testID="expense-hero" style={[styles.hero, { paddingTop: insets.top + 24 }]}>

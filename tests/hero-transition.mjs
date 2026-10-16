@@ -21,39 +21,46 @@ export async function verifyHeroTransition(tab) {
   assert.ok(Date.now() - stableSince >= 150, 'Inicio debe estabilizarse antes de medir la transición.');
   assert.doesNotMatch(await hero.innerText(), /DEMO/, 'El hero de Inicio no debe mostrar DEMO.');
 
-  async function switchTo(name) {
-    const frames = [await height()];
-    await tab.playwright.getByRole('tab', { name, exact: true }).click();
-    const start = Date.now();
+  async function waitForHeight(matches, timeout = 1500) {
+    const deadline = Date.now() + timeout;
+    let value;
     do {
       // Consultar el mismo nodo también detecta si el hero fue desmontado.
-      frames.push(await height());
-    } while (Date.now() - start < 700);
-    const first = frames[0];
-    const last = frames.at(-1);
-    assert.ok(frames.some(value => value > Math.min(first, last) + 2 && value < Math.max(first, last) - 2), 'La altura debe pasar por valores intermedios.');
-    return { first, last };
+      value = await height();
+      if (matches(value)) return value;
+      await new Promise(resolve => setTimeout(resolve, 20));
+    } while (Date.now() < deadline);
+    assert.fail(`El hero no alcanzó la altura esperada: ${value}`);
   }
 
-  const collapse = await switchTo('Gastos');
-  assert.ok(collapse.last < collapse.first, 'Gastos debe contraer el hero.');
-  assert.doesNotMatch(await hero.innerText(), /DEMO/, 'El hero de Gastos no debe mostrar DEMO.');
-  const expand = await switchTo('Inicio');
-  assert.ok(expand.last > expand.first, 'Inicio debe desplegar el hero.');
-  assert.ok(Math.abs(expand.last - collapse.first) < 1, 'Volver a Inicio debe recuperar la altura original.');
+  async function assertHeld(expected) {
+    const start = Date.now();
+    do {
+      const actual = await height();
+      assert.ok(Math.abs(actual - expected) <= 1, `El hero debe conservar su posición durante la permanencia: esperado ${expected}, actual ${actual}, transcurridos ${Date.now() - start} ms.`);
+      await new Promise(resolve => setTimeout(resolve, 40));
+    } while (Date.now() - start < 3200);
+  }
 
+  await new Promise(resolve => setTimeout(resolve, 4000));
+  const expandedHeight = await height();
   await tab.playwright.getByRole('tab', { name: 'Gastos', exact: true }).click();
-  const start = Date.now();
-  let intermediate;
-  do { intermediate = await height(); }
-  while (intermediate > expand.last - 20 && Date.now() - start < 500);
-  assert.ok(intermediate > collapse.last && intermediate < expand.last - 20, 'Debe poder invertirse una transición en curso.');
+  await waitForHeight(value => value < expandedHeight - 20);
   await tab.playwright.getByRole('tab', { name: 'Inicio', exact: true }).click();
-  assert.ok(await height() < expand.last - 2, 'Invertir la transición no debe saltar a la altura final.');
-  const reverseStart = Date.now();
-  let final;
-  do { final = await height(); }
-  while (Date.now() - reverseStart < 700);
-  assert.ok(Math.abs(final - expand.last) < 1, 'La transición invertida debe terminar desplegada.');
-  return { expandedHeight: expand.last, collapsedHeight: collapse.last };
+  await waitForHeight(value => value < expandedHeight - 200);
+  // Dar margen a los últimos píxeles de easing antes de medir la permanencia.
+  await new Promise(resolve => setTimeout(resolve, 150));
+  const collapsed = await height();
+  assert.ok(collapsed < expandedHeight - 200, 'Una orden opuesta no debe interrumpir la contracción.');
+  await assertHeld(collapsed);
+
+  await waitForHeight(value => value > collapsed + 20);
+  await tab.playwright.getByRole('tab', { name: 'Gastos', exact: true }).click();
+  await waitForHeight(value => Math.abs(value - expandedHeight) <= 1);
+  await new Promise(resolve => setTimeout(resolve, 100));
+  await assertHeld(expandedHeight);
+  await waitForHeight(value => Math.abs(value - collapsed) <= 1);
+  assert.doesNotMatch(await hero.innerText(), /DEMO/, 'El hero de Gastos no debe mostrar DEMO.');
+  assert.equal(await hero.count(), 1, 'Las solicitudes pendientes deben reutilizar el mismo hero.');
+  return { expandedHeight, collapsedHeight: collapsed };
 }
