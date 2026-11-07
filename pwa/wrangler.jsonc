@@ -1,0 +1,26 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "expense-tracker-pwa",
+  "account_id": "6d93a005ece548efa7de48c051ace6fb",
+  "main": "worker/index.js",
+  "compatibility_date": "2026-10-26",
+  "workers_dev": true,
+  "preview_urls": false,
+  "observability": {
+    "enabled": true,
+    "logs": { "enabled": true, "head_sampling_rate": 0.1 },
+    "traces": { "enabled": true, "head_sampling_rate": 0.1 }
+  },
+  "assets": {
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "expense-tracker-pwa",
+      "database_id": "8401b18e-0854-4dfb-95e3-d7345e185146",
+      "migrations_dir": "migrations"
+    }
+  ]
+}
