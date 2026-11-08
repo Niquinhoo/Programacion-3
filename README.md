@@ -11,8 +11,10 @@ PWA publicada: [expense-tracker-pwa.nicotrib699.workers.dev](https://expense-tra
 
 El [informe de STP2](docs/informe-sprint-2.md) reúne la comparación Expo/PWA,
 las comprobaciones, el informe Lighthouse y los pendientes de entrega.
-Las mejoras del 8 de noviembre de 2026 están verificadas localmente en la rama
-`STP2`; todavía no están desplegadas ni incluidas en un commit.
+Las mejoras del 8 de noviembre de 2026 están verificadas en la rama `STP2`,
+incluidas en el [commit 7abdbcf](https://github.com/Niquinhoo/Programacion-3/commit/7abdbcfa3e14ba41be4f007dc0aa3fc105a05043)
+y desplegadas en Cloudflare al 100% del tráfico. El [registro de publicación](docs/despliegue-cloudflare-sprint-2.md#publicación-del-8-de-noviembre-de-2026)
+identifica la versión y sus comprobaciones.
 
 ## Estado de la entrega
 
@@ -22,8 +24,8 @@ Expo está actualizado a `57.0.32`, dentro del SDK 57.
 
 Falta verificar la PWA instalada en un teléfono y la aplicación nativa en Expo Go,
 y adjuntar sus capturas equivalentes. Las capturas de Chromium son evidencia web.
-También queda publicar estos cambios y verificar la versión publicada con una
-sesión autorizada de Access, incluido el acceso del docente.
+También queda verificar la versión publicada con una sesión autorizada de Access,
+incluido el acceso del docente. Sin sesión se comprobó la redirección a Access.
 
 ## Validación de Expo
 

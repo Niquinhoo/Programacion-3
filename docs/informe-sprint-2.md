@@ -2,10 +2,10 @@
 
 **Fecha:** 8 de noviembre de 2026 · **Rama:** `STP2`.
 
-La implementación web y la lectura offline están verificadas localmente. El sprint
-todavía requiere la demostración y las capturas en teléfono. Los cambios de esta
-fecha no están desplegados ni incluidos en un commit; la URL publicada conserva
-la versión anterior.
+La implementación web y la lectura offline están verificadas localmente. El commit
+`7abdbcf` está enviado a `origin/STP2`; la PWA está desplegada al 100% en Cloudflare.
+El sprint todavía requiere la demostración y las capturas en teléfono, además de
+verificar esta revisión dentro de una sesión autorizada de Access.
 
 ## Contraste con la consigna
 
@@ -21,7 +21,7 @@ En esta revisión no se pudo reabrir su enlace de Notion.
 | US5 — Formulario | `dialog`, portal, validación, cierre, guardado online y conservación ante error | Teclado virtual y controles táctiles reales |
 | US6 — Listado y detalle | Tres registros iniciales, detalle por ID, enlace directo, recarga y mensaje para ID ausente | Recorrido equivalente en teléfono |
 | US7 — Navegación | Rutas reales, barra inferior, filtros, historial, foco y movimiento reducido comprobados en Chromium | Atrás del sistema en teléfono |
-| US8 — PWA y offline | Build, Service Worker, recarga de rutas profundas y consulta de datos offline en producción local; Lighthouse adjunto | Publicar esta revisión, verificar Access autenticado y repetir en teléfono |
+| US8 — PWA y offline | Build, Service Worker, rutas profundas y datos offline en producción local; Lighthouse adjunto; revisión desplegada con Access activo | Verificar navegación autenticada y repetir en teléfono |
 | US9 — Bonus | Íconos, categorías y transiciones presentes | Opcional; no condiciona el cierre obligatorio |
 
 El uso de D1 es una ampliación autorizada del ejercicio. La consigna original
@@ -129,10 +129,28 @@ advertencia de texto visible/nombre accesible de las tarjetas se corrigió usand
 su contenido como nombre accesible, sin reemplazarlo con un `aria-label` parcial;
 la comprobación de Lighthouse quedó correcta.
 
+## Publicación verificada
+
+El 8/11/2026 a las 19:31 de Buenos Aires se desplegó el código del
+[commit 7abdbcf](https://github.com/Niquinhoo/Programacion-3/commit/7abdbcfa3e14ba41be4f007dc0aa3fc105a05043),
+ya enviado a `origin/STP2`. Cloudflare confirmó la versión
+`2dbc13a9-ad01-4bc0-ab24-93e478d51a32` al 100% del tráfico del Worker
+`expense-tracker-pwa`. La D1, la fecha de compatibilidad y el muestreo del 10% de
+logs/trazas se conservaron. No se aplicaron migraciones ni se crearon gastos reales.
+
+Antes de publicar se repitieron test, lint, typecheck y Expo Doctor (21/21), los
+5 tests de PWA, el build, las pruebas de UI/offline y el dry run de Wrangler.
+Después se consultaron el despliegue y la configuración remotos. Las rutas `/`,
+`/expenses`, `/expenses/1`, `/settings`, `/api/expenses`, `/api/expenses/1`,
+`/manifest.json`, `/sw.js` y los nuevos JS/CSS respondieron 302 al dominio de Access
+sin sesión. Esto verifica la protección; no acredita navegación autenticada.
+
+Detalle y comandos: [registro de publicación](despliegue-cloudflare-sprint-2.md#publicación-del-8-de-noviembre-de-2026).
+
 ## Pendientes para el teléfono y la entrega
 
-- [ ] Publicar esta revisión y comprobar, con sesión autorizada, Inicio, lista,
-  detalle por enlace directo, guardado y redirección a Access sin sesión.
+- [x] Publicar esta revisión y comprobar la redirección a Access sin sesión.
+- [ ] Comprobar con sesión autorizada Inicio, lista, detalle por enlace directo y guardado.
 - [ ] Asegurar acceso del docente. La URL requiere una identidad permitida por Access.
 - [ ] En teléfono, instalar desde Chrome/Android o Safari/iOS y tomar captura
   del ícono y nombre en la pantalla de inicio.

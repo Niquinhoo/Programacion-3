@@ -20,7 +20,39 @@ Servir la PWA desde Cloudflare Workers, guardar gastos en D1 y exigir Cloudflare
 
 La API del Worker sirve `GET /api/expenses`, `GET /api/expenses/:id` y `POST /api/expenses`. Los archivos estáticos de Vite y la API comparten origen. Las tablas y los tres gastos de ejemplo se cargaron en D1 mediante `0001_create_expenses.sql` y `0002_seed_sample_expenses.sql`; la segunda migración es idempotente.
 
-## Estado actual
+## Publicación del 8 de noviembre de 2026
+
+| Dato | Resultado |
+| --- | --- |
+| Código publicado | Commit `7abdbcf`, enviado a `origin/STP2` |
+| Worker | `expense-tracker-pwa` |
+| URL | [expense-tracker-pwa.nicotrib699.workers.dev](https://expense-tracker-pwa.nicotrib699.workers.dev) |
+| Fecha | 8/11/2026, 19:31 de Buenos Aires (22:31 UTC) |
+| Versión | `2dbc13a9-ad01-4bc0-ab24-93e478d51a32` |
+| Deployment ID | `3e8ef96a-d0c1-4100-8483-5a7e3dc0e365` |
+| Tráfico | 100%, confirmado por la API de Cloudflare |
+| Assets actualizados | `index.html`, `sw.js`, `assets/index-B4JG2_N9.js`, `assets/index-Ct2Zy5-r.css` |
+| Base de datos | Binding `DB` a la D1 existente; sin migraciones ni altas reales |
+
+Se usó Wrangler local **4.154.0**, con la identidad OAuth habitual y permisos de
+Workers Scripts Write. Se verificaron configuración y binding remotos antes y
+después; se conservaron `compatibility_date: 2026-10-26`, Access y logs/trazas
+con muestreo del 10%. Las previews siguen desactivadas.
+
+Comandos de publicación ejecutados desde `pwa/`, después de las validaciones:
+
+```sh
+node node_modules/wrangler/bin/wrangler.js deploy --dry-run --config dist/expense_tracker_pwa/wrangler.json
+node node_modules/wrangler/bin/wrangler.js deploy --config dist/expense_tracker_pwa/wrangler.json --keep-vars --message 'STP2 7abdbcf: lectura offline, Lighthouse y Expo 57.0.32'
+```
+
+La API confirmó la versión al 100%. Sin autenticar, se comprobó HTTP 302 hacia
+`tiny-mud-73e8.cloudflareaccess.com` para Inicio, Gastos, detalle, Ajustes, los dos
+GET de API, manifest, Service Worker y los nuevos assets JS/CSS. No se hizo una
+comprobación autenticada ni una escritura en producción durante esta publicación.
+Lighthouse y las pruebas de navegación/offline corresponden al build local.
+
+## Estado comprobado el 29 de octubre de 2026
 
 - La D1 remota se creó para esta PWA y se aplicaron las dos migraciones. No se reutilizó ni modificó `calma-db`.
 - Wrangler 4.154.0 autenticado como `nicotrib699@gmail.com` tiene `Workers Scripts Write` y `D1 Write`.

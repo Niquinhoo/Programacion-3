@@ -69,7 +69,7 @@ El 29/10/2026 se compararon STP1 web y STP2 con Chromium a 320, 390, 600 y 1024 
 
 ## Cierre local del 8 de noviembre de 2026
 
-La lectura offline de datos, la actualización de Expo y la documentación de esta fecha están implementadas en la rama `STP2`, pendientes de commit y despliegue. El [informe del sprint](../docs/informe-sprint-2.md) contiene la tabla comparativa, los resultados, las fuentes y la lista de comprobaciones de teléfono pendientes.
+La lectura offline de datos, la actualización de Expo y la documentación de esta fecha están incluidas en el commit `7abdbcf`, enviado a `origin/STP2`. La PWA se desplegó el 8/11/2026 a las 19:31 de Buenos Aires: versión `2dbc13a9-ad01-4bc0-ab24-93e478d51a32` al 100% del tráfico. Se conservaron D1 y Access; las rutas de la app, API, manifest, Service Worker y assets redirigen a Access sin sesión. La navegación autenticada y el teléfono siguen pendientes. El [informe del sprint](../docs/informe-sprint-2.md) contiene la comparación y resultados; el [registro de publicación](../docs/despliegue-cloudflare-sprint-2.md#publicación-del-8-de-noviembre-de-2026) identifica el despliegue.
 
 Para repetir las comprobaciones de navegador, primero generar y servir producción:
 
