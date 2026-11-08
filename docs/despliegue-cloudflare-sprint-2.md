@@ -50,7 +50,24 @@ La API confirmó la versión al 100%. Sin autenticar, se comprobó HTTP 302 haci
 `tiny-mud-73e8.cloudflareaccess.com` para Inicio, Gastos, detalle, Ajustes, los dos
 GET de API, manifest, Service Worker y los nuevos assets JS/CSS. No se hizo una
 comprobación autenticada ni una escritura en producción durante esta publicación.
-Lighthouse y las pruebas de navegación/offline corresponden al build local.
+Lighthouse y las pruebas automatizadas de navegación/offline corresponden al
+build local. La verificación manual posterior de producción se detalla a continuación.
+
+## Verificación autenticada posterior a la publicación
+
+El 8/11/2026 se verificaron en Chrome de escritorio la sesión de Access,
+Inicio/listado/detalle de D1, búsqueda, recarga, navegación, validación y cancelación.
+También se comprobó la lectura offline en producción y la conservación del
+formulario cuando falla un alta sin conexión; la conexión normal quedó restaurada.
+
+A las 19:47 de Buenos Aires se creó, por pedido explícito del usuario, un gasto
+identificado como prueba: `Prueba STP2 - guardado online 2026-11-08`, ARS 1,00,
+categoría Otros, ID `4`. El POST respondió 201; al recargar listado y detalle,
+los GET respondieron 200 desde la red y conservaron todos sus campos y notas.
+El registro queda en D1: cuatro gastos y total $75.001, con los tres iniciales
+conservados. El [informe](informe-sprint-2.md#verificación-autenticada-en-producción)
+contiene la captura y el detalle de esta comprobación. No se modificaron código,
+configuración, migraciones ni políticas de Access para realizarla.
 
 ## Estado comprobado el 29 de octubre de 2026
 

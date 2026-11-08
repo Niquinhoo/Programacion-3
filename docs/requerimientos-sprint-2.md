@@ -2,7 +2,7 @@
 
 **Fuente:** [ExpenseTracker Sprint 2](https://programacion3.notion.site/expensetracker-sprint-2), consultada el 27 de octubre de 2026.  
 **Rama de trabajo:** `STP2`, creada desde `STP1`.  
-**Estado al 8 de noviembre de 2026:** implementación web y lectura offline verificadas localmente; Lighthouse Mobile y documentación disponibles en el [informe de cierre](informe-sprint-2.md). El commit `7abdbcf` está en `origin/STP2` y la PWA está [desplegada al 100%](despliegue-cloudflare-sprint-2.md#publicación-del-8-de-noviembre-de-2026), con redirección a Access comprobada sin sesión. Navegación autenticada de esta revisión, instalación física, Expo Go y sus capturas permanecen pendientes.
+**Estado al 8 de noviembre de 2026:** implementación web, lectura offline y guardado online con persistencia verificados en producción con sesión autorizada; Lighthouse Mobile local y evidencia disponibles en el [informe de cierre](informe-sprint-2.md). El commit `7abdbcf` está en `origin/STP2` y la PWA está [desplegada al 100%](despliegue-cloudflare-sprint-2.md#publicación-del-8-de-noviembre-de-2026), con redirección a Access comprobada sin sesión. Se conserva el gasto de prueba ID `4` por ARS 1,00. Instalación física, Expo Go, sus capturas y acceso del docente permanecen pendientes.
 
 ## Objetivo y alcance
 

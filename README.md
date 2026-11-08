@@ -24,8 +24,10 @@ Expo está actualizado a `57.0.32`, dentro del SDK 57.
 
 Falta verificar la PWA instalada en un teléfono y la aplicación nativa en Expo Go,
 y adjuntar sus capturas equivalentes. Las capturas de Chromium son evidencia web.
-También queda verificar la versión publicada con una sesión autorizada de Access,
-incluido el acceso del docente. Sin sesión se comprobó la redirección a Access.
+La versión publicada ya se verificó con sesión autorizada de Access, incluidos
+lectura offline y guardado online con persistencia tras recargar. Se conserva un
+registro de prueba de ARS 1,00, ID `4`; el total actual de producción es $75.001.
+Falta confirmar el acceso del docente. Sin sesión se comprobó la redirección a Access.
 
 ## Validación de Expo
 

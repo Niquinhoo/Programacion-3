@@ -2,10 +2,11 @@
 
 **Fecha:** 8 de noviembre de 2026 · **Rama:** `STP2`.
 
-La implementación web y la lectura offline están verificadas localmente. El commit
-`7abdbcf` está enviado a `origin/STP2`; la PWA está desplegada al 100% en Cloudflare.
-El sprint todavía requiere la demostración y las capturas en teléfono, además de
-verificar esta revisión dentro de una sesión autorizada de Access.
+La implementación web está verificada localmente y en producción con una sesión
+autorizada de Access, incluida la lectura offline y un alta online real de prueba.
+El commit `7abdbcf` está enviado a `origin/STP2`; la PWA está desplegada al 100% en
+Cloudflare. Quedan la demostración y las capturas en teléfono, la prueba en Expo Go
+y la confirmación del acceso del docente.
 
 ## Contraste con la consigna
 
@@ -18,10 +19,10 @@ En esta revisión no se pudo reabrir su enlace de Notion.
 | US2 — Estructura | Separación de páginas, componentes, rutas, layout, hooks y datos | Sin faltantes de estructura observados |
 | US3 — Identidad e instalación | Manifest único, íconos 192/512 y maskable, metadatos iOS, hook y banner de instalación | Instalar y comprobar identidad/standalone en teléfono |
 | US4 — Inicio | Bienvenida, resumen, accesos y lista reciente | Captura equivalente en teléfono |
-| US5 — Formulario | `dialog`, portal, validación, cierre, guardado online y conservación ante error | Teclado virtual y controles táctiles reales |
+| US5 — Formulario | `dialog`, portal, validación, cierre, alta online real en D1 y conservación ante error | Teclado virtual y controles táctiles reales |
 | US6 — Listado y detalle | Tres registros iniciales, detalle por ID, enlace directo, recarga y mensaje para ID ausente | Recorrido equivalente en teléfono |
 | US7 — Navegación | Rutas reales, barra inferior, filtros, historial, foco y movimiento reducido comprobados en Chromium | Atrás del sistema en teléfono |
-| US8 — PWA y offline | Build, Service Worker, rutas profundas y datos offline en producción local; Lighthouse adjunto; revisión desplegada con Access activo | Verificar navegación autenticada y repetir en teléfono |
+| US8 — PWA y offline | Build y Lighthouse local; navegación autenticada, datos offline y recarga de detalle comprobados en Chrome sobre producción con Access | Instalación y repetición de las comprobaciones en teléfono |
 | US9 — Bonus | Íconos, categorías y transiciones presentes | Opcional; no condiciona el cierre obligatorio |
 
 El uso de D1 es una ampliación autorizada del ejercicio. La consigna original
@@ -40,7 +41,7 @@ trabajaba con datos de prueba y no evaluaba persistencia ni APIs remotas.
 | Altas y persistencia | Sin persistencia en STP1 | D1 online; no hay cola ni guardado offline |
 | Identidad | `app.json` y recursos Expo | Manifest, íconos web y flujo de instalación del navegador |
 | Diseño | Fuentes, colores e interacciones del prototipo | Mismas fuentes y color principal `#0057FF`; adaptación web sin gradientes |
-| Evidencia actual | Comprobaciones de código; prueba física pendiente | Chromium de escritorio con viewport móvil y Lighthouse local |
+| Evidencia actual | Comprobaciones de código; prueba física pendiente | Chromium con viewport móvil y Lighthouse local; Chrome autenticado contra producción, con alta real y persistencia |
 
 ## Comportamiento offline
 
@@ -81,8 +82,9 @@ navegador no detecta la recuperación, se puede recargar manualmente.
 | Revisión del diff | Agente principal; sin subagentes, sin generar `android/` ni `ios/` |
 
 Se reprodujo primero el fallo de la recarga offline con la versión anterior.
-La comprobación de navegador usa consultas a D1 local y simula los POST de prueba;
-no se hicieron altas reales ni cambios de infraestructura en producción.
+Las comprobaciones automatizadas de navegador usan D1 local y simulan los POST;
+no escriben en la D1 remota. El alta real autorizada y sus respuestas de red se
+registran en la sección de verificación autenticada de este informe.
 Los comandos para repetirla están en el [README de la PWA](../pwa/README.md).
 
 La instalación de Expo informó 12 avisos de `npm audit` (11 moderados y uno alto).
@@ -136,21 +138,62 @@ El 8/11/2026 a las 19:31 de Buenos Aires se desplegó el código del
 ya enviado a `origin/STP2`. Cloudflare confirmó la versión
 `2dbc13a9-ad01-4bc0-ab24-93e478d51a32` al 100% del tráfico del Worker
 `expense-tracker-pwa`. La D1, la fecha de compatibilidad y el muestreo del 10% de
-logs/trazas se conservaron. No se aplicaron migraciones ni se crearon gastos reales.
+logs/trazas se conservaron. Durante el despliegue no se aplicaron migraciones ni
+se crearon gastos; el alta posterior autorizada se detalla a continuación.
 
 Antes de publicar se repitieron test, lint, typecheck y Expo Doctor (21/21), los
 5 tests de PWA, el build, las pruebas de UI/offline y el dry run de Wrangler.
 Después se consultaron el despliegue y la configuración remotos. Las rutas `/`,
 `/expenses`, `/expenses/1`, `/settings`, `/api/expenses`, `/api/expenses/1`,
 `/manifest.json`, `/sw.js` y los nuevos JS/CSS respondieron 302 al dominio de Access
-sin sesión. Esto verifica la protección; no acredita navegación autenticada.
+sin sesión. Esa comprobación verifica la protección; la navegación autenticada
+se comprobó después y se registra a continuación.
 
 Detalle y comandos: [registro de publicación](despliegue-cloudflare-sprint-2.md#publicación-del-8-de-noviembre-de-2026).
+
+## Verificación autenticada en producción
+
+El 8/11/2026 se comprobó la URL publicada desde Chrome de escritorio con una
+sesión autorizada de Cloudflare Access. El navegador conservaba una versión
+antigua: se renovó la sesión y se actualizó su Service Worker. Se confirmó el
+asset publicado `assets/index-B4JG2_N9.js`; al finalizar quedó restaurada la
+conexión normal y desactivada la omisión temporal del Service Worker.
+
+| Recorrido | Resultado observado |
+| --- | --- |
+| Inicio y listado de D1 | Antes del alta: tres gastos iniciales y total $75.000 |
+| Búsqueda y detalle | Búsqueda de Supermercado, detalle `/expenses/1`, recarga y retorno correctos |
+| Navegación y formulario | Ajustes, Atrás, apertura/cancelación y validación de nombre vacío correctos |
+| Producción sin conexión | Recarga de `/expenses/2`, un detalle no visitado online en esa comprobación, y retorno a Inicio con total $75.000 y aviso de copia offline |
+| Alta sin conexión | Nombre y monto conservados; mensaje que pide reconectar; sin alta confirmada |
+| Alta online autorizada | Una pulsación de Guardar; `POST /api/expenses` respondió HTTP 201, sin provenir del Service Worker |
+| Persistencia del alta | Después de recargar Inicio y luego `/expenses/4`, los GET de listado y detalle respondieron HTTP 200 desde la red y conservaron nombre, monto, categoría, fecha y notas |
+
+El alta se hizo el 8/11/2026 a las 19:47 de Buenos Aires. Se conserva **un único
+registro de prueba** en D1; no representa un gasto real:
+
+| Campo | Valor |
+| --- | --- |
+| ID | `4` |
+| Nombre | `Prueba STP2 - guardado online 2026-11-08` |
+| Monto | ARS 1,00 |
+| Categoría | Otros |
+| Fecha | 8/11/2026 |
+| Notas | Registro de prueba autorizado para verificar guardado online y persistencia. No representa un gasto real. |
+| Detalle | `/expenses/4` |
+| Estado posterior | Cuatro gastos en producción; total $75.001 |
+
+Los tres gastos iniciales se conservaron. Las capturas previas de Inicio y
+Lighthouse muestran el estado anterior al alta, con tres gastos y total $75.000.
+Esta verificación corresponde a Chrome de computadora y no acredita ejecución
+en un teléfono ni en Expo Go.
+
+![Detalle del gasto de prueba después de recargar en Chrome autenticado](evidence/stp2/guardado-online-autenticado.jpg)
 
 ## Pendientes para el teléfono y la entrega
 
 - [x] Publicar esta revisión y comprobar la redirección a Access sin sesión.
-- [ ] Comprobar con sesión autorizada Inicio, lista, detalle por enlace directo y guardado.
+- [x] Comprobar con sesión autorizada Inicio, lista, detalle por enlace directo y guardado, con persistencia tras recargar.
 - [ ] Asegurar acceso del docente. La URL requiere una identidad permitida por Access.
 - [ ] En teléfono, instalar desde Chrome/Android o Safari/iOS y tomar captura
   del ícono y nombre en la pantalla de inicio.
