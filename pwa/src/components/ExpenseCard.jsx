@@ -12,7 +12,8 @@ const categories = {
 export default function ExpenseCard({ expense }) {
   const location = useLocation();
   const category = categories[expense.category] || categories.Otros;
-  return <li className="expense-item"><Link className="expense-card" to={`/expenses/${expense.id}`} state={{ backgroundPath: location.pathname }} aria-label={`Ver detalle de ${expense.name}, ${formatAmount(expense.amount)}`}>
+  return <li className="expense-item"><Link className="expense-card" to={`/expenses/${expense.id}`} state={{ backgroundPath: location.pathname }}>
+    <span className="visually-hidden">Ver detalle de </span>
     <span className="expense-mark" style={{ background: category.background, color: category.color }}><Icon name={category.icon} size={26} /></span>
     <span className="expense-info"><strong>{expense.name}</strong><span className="expense-category">{expense.category}</span></span>
     <span className="expense-amount"><strong>{formatAmount(expense.amount)}</strong><time dateTime={expense.date}>{formatDate(expense.date)}</time></span><Icon name="chevron-forward" size={18} className="chevron" />

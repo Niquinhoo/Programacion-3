@@ -18,6 +18,7 @@ a { color: inherit; text-decoration: none; }
 button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px solid #68A0FF; outline-offset: 3px; }
 .icon { display: inline-block; flex-shrink: 0; font-family: Ionicons; font-weight: 400; font-style: normal; line-height: 1; text-transform: none; letter-spacing: 0; }
 .app-shell { display: flex; flex-direction: column; height: 100vh; height: 100dvh; background: #F3F7FC; }
+.connection-notice { flex-shrink: 0; padding: 10px max(16px, var(--safe-left)); background: #DBE8FF; color: #062A78; font-size: 12px; line-height: 18px; text-align: center; }
 .scene-area { position: relative; display: flex; flex: 1; flex-direction: column; min-height: 0; width: 100%; padding-inline: var(--safe-left) var(--safe-right); }
 .page-main { flex: 1; min-height: 0; overflow: hidden; }
 .screen-scroll { height: 100%; overflow-y: auto; overscroll-behavior-y: contain; scrollbar-width: none; }

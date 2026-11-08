@@ -22,13 +22,20 @@ export default function MainLayout() {
   const settings = path === '/settings';
   const [expenses, setExpenses] = useState([]);
   const [error, setError] = useState('');
+  const [offline, setOffline] = useState(!navigator.onLine);
   const [collapsed, setCollapsed] = useState(false);
   const [transitioning, setTransitioning] = useState(false);
   const heroLock = useRef({ complete: true, lockedUntil: 0 });
   useEffect(() => {
     let active = true;
-    getExpenses().then((items) => { if (active) setExpenses(items); }).catch((e) => { if (active) setError(e.message); });
-    return () => { active = false; };
+    function load() {
+      setOffline(!navigator.onLine);
+      getExpenses().then(({ expenses: items, offline: cached }) => { if (active) { setExpenses(items); setOffline(cached); setError(''); } }).catch((e) => { if (active) setError(e.message); });
+    }
+    load();
+    window.addEventListener('online', load);
+    window.addEventListener('offline', load);
+    return () => { active = false; window.removeEventListener('online', load); window.removeEventListener('offline', load); };
   }, []);
   const onTransitionChange = useCallback((status) => {
     heroLock.current = status;
@@ -41,6 +48,7 @@ export default function MainLayout() {
     setCollapsed(value);
   }
   return <div className="app-shell" style={{ '--hero-ease': heroEase, '--morph-duration': `${motion.morph}ms` }}>
+    {offline && <p className="connection-notice" role="status">Sin conexión. Se muestra la última copia guardada. Reconectate para guardar gastos.</p>}
     {!settings && <ExpenseHero home={home} collapsed={collapsed} expenses={expenses} onTransitionChange={onTransitionChange} />}
     <div className="scene-area">
       {!settings && <NewExpenseButton expanded={home} onClick={() => navigate(location.pathname + location.search, { state: { ...location.state, newExpense: true } })} />}

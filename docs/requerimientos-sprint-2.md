@@ -2,7 +2,7 @@
 
 **Fuente:** [ExpenseTracker Sprint 2](https://programacion3.notion.site/expensetracker-sprint-2), consultada el 27 de octubre de 2026.  
 **Rama de trabajo:** `STP2`, creada desde `STP1`.  
-**Estado:** consignas relevadas; implementación de `pwa/` en curso. Validaciones físicas, URL HTTPS protegida y evidencia de Lighthouse pendientes.
+**Estado al 8 de noviembre de 2026:** implementación web y lectura offline verificadas localmente; Lighthouse Mobile y documentación disponibles en el [informe de cierre](informe-sprint-2.md). Existe una URL HTTPS protegida; las mejoras de esta fecha aún no están desplegadas. Instalación física, Expo Go y sus capturas permanecen pendientes.
 
 ## Objetivo y alcance
 
@@ -16,9 +16,11 @@ Los datos siguen definidos manualmente. La consigna indica que **no se evaluará
 
 El 27 de octubre de 2026, el usuario pidió desplegar la rama `STP2` en Cloudflare Workers y guardar los gastos de la PWA en Cloudflare D1 (SQLite). Para `pwa/`, esta decisión amplía la consigna original: la web obtiene gastos y los crea mediante una API del Worker enlazada a D1. El usuario eligió Cloudflare Access para proteger la aplicación completa, incluida su API. La app Expo de Sprint 1 conserva su alcance y datos actuales.
 
-La base remota `expense-tracker-pwa` ya se creó en la cuenta de Cloudflare (región ENAM) y recibió las dos migraciones con los registros de ejemplo. No se reutiliza `calma-db`, que pertenece a otro proyecto. `wrangler.jsonc` ya tiene el UUID. Resta activar y verificar Access antes de desplegar el Worker.
+La base remota `expense-tracker-pwa` ya se creó en la cuenta de Cloudflare (región ENAM) y recibió las dos migraciones con los registros de ejemplo. No se reutiliza `calma-db`, que pertenece a otro proyecto. `wrangler.jsonc` ya tiene el UUID. El Worker fue publicado con Access; véase el [runbook](despliegue-cloudflare-sprint-2.md). La versión local del 8/11 conserva la última lista de D1 para lectura offline, sin encolar altas ni modificar la app Expo.
 
-## Flujo de la aplicación
+## Flujo de la consigna original
+
+El guardado sin persistencia descrito aquí corresponde a la consigna; la ampliación autorizada con D1 y la copia offline se detallan arriba y en el informe de cierre.
 
 1. La persona abre `/` y ve bienvenida, resumen y accesos para registrar un gasto o consultar el listado.
 2. Desde Inicio o Gastos abre el formulario como panel modal inferior; puede completar nombre, monto y categoría, guardar para obtener una respuesta simple o cancelar. No se guarda información.
@@ -145,7 +147,9 @@ expense-tracker-pwa/
 3. Configurar producción, Service Worker, fallback de rutas y HTTPS (US 8); comprobar instalación y modo offline en dispositivo.
 4. Reunir capturas, Lighthouse, comparación y evidencia de participación. Considerar bonus solo después de cumplir lo obligatorio.
 
-## Punto de partida y decisiones pendientes
+## Punto de partida histórico del 27 de octubre
+
+Las observaciones siguientes describen el estado inicial. La ubicación `pwa/`, Cloudflare, los detalles por URL y el tratamiento de notas ya están implementados; el estado actual está en el [informe de cierre](informe-sprint-2.md).
 
 - El repositorio actual es la aplicación Expo de Sprint 1; sus tres gastos están en `src/data/expenses.js` y coinciden en nombre y monto con la consigna. Los registros observados tienen ID, nombre, monto, categoría y fecha, pero **no incluyen notas**: hay que definir cómo presentar ese campo sin inventar contenido.
 - La navegación actual usa `StackNavigator` y `TabNavigator`; el detalle y el alta se presentan como modales. Sprint 2 exige una ruta de detalle por ID y un modal de alta con `<dialog>`. Esto requiere una implementación web específica; este documento no decide un refactor del código existente.

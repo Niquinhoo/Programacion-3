@@ -8,7 +8,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "node --test",
-    "test:ui": "node checks/stp1-parity.mjs"
+    "test:ui": "node checks/stp1-parity.mjs",
+    "test:offline": "node checks/offline.mjs"
   },
   "dependencies": {
     "react": "^19.3.1",

@@ -12,8 +12,12 @@ export default function ExpenseDetailScreen({ id }) {
   const [error, setError] = useState('');
   useEffect(() => {
     let active = true;
-    getExpense(id).then((item) => { if (active) setExpense(item); }).catch((e) => { if (active) setError(e.message); });
-    return () => { active = false; };
+    function load() {
+      getExpense(id).then((item) => { if (active) { setExpense(item); setError(''); } }).catch((e) => { if (active) setError(e.message); });
+    }
+    load();
+    window.addEventListener('online', load);
+    return () => { active = false; window.removeEventListener('online', load); };
   }, [id]);
   function back() {
     if (location.state?.backgroundPath && window.history.state?.idx > 0) navigate(-1);
