@@ -73,12 +73,11 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .expense-card { display: flex; align-items: center; min-width: 0; min-height: 68px; gap: 10px; padding: 10px 12px; border-radius: 18px; background: #FFF; }
 .expense-card:active { opacity: .75; transform: scale(.99); }
 .expense-mark { display: grid; place-items: center; flex: 0 0 46px; width: 46px; height: 46px; border-radius: 14px; }
-.expense-info { display: flex; flex-direction: column; flex: 1 1 0; gap: 4px; min-width: 64px; }
+.expense-info { display: flex; flex-direction: column; flex: 1 1 0; gap: 4px; min-width: 0; }
 .expense-info strong { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 14px; font-weight: 700; letter-spacing: -.4px; }
 .expense-category { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: var(--muted); font-size: 12px; }
-.expense-amount { display: flex; flex-direction: column; align-items: flex-end; flex: 0 1 auto; gap: 4px; min-width: 0; max-width: 55%; white-space: nowrap; }
-.expense-amount strong, .expense-amount time { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
-.expense-amount strong { font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.expense-amount { display: flex; flex-direction: column; align-items: flex-end; flex: 0 1 auto; gap: 4px; min-width: 0; max-width: 48%; }
+.expense-amount strong { max-width: 100%; overflow-wrap: anywhere; text-align: right; font-size: 14px; line-height: 16px; font-weight: 700; font-variant-numeric: tabular-nums; }
 .expense-amount time { color: var(--muted); font-size: 11px; }
 .chevron { color: var(--muted); }
 .listing-page { width: min(100%, 600px); margin-inline: auto; display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; padding: 18px 16px 96px; }
