@@ -7,7 +7,7 @@ Repositorio con las dos implementaciones de ExpenseTracker:
 | STP1 | Expo / React Native en la raíz | `npm install` y `npm start`, abrir con Expo Go compatible con SDK 57 |
 | STP2 | React / Vite PWA en `pwa/` | Seguir [el README de la PWA](pwa/README.md) |
 
-PWA publicada: [expense-tracker-pwa.nicotrib699.workers.dev](https://expense-tracker-pwa.nicotrib699.workers.dev), con acceso restringido por Cloudflare Access.
+PWA publicada: [expense-tracker-pwa.nicotrib699.workers.dev](https://expense-tracker-pwa.nicotrib699.workers.dev), con acceso público para que la cátedra pueda revisarla sin iniciar sesión.
 
 El [informe de STP2](docs/informe-sprint-2.md) reúne la comparación Expo/PWA,
 las comprobaciones, el informe Lighthouse y los pendientes de entrega.
@@ -24,10 +24,11 @@ Expo está actualizado a `57.0.32`, dentro del SDK 57.
 
 Falta verificar la PWA instalada en un teléfono y la aplicación nativa en Expo Go,
 y adjuntar sus capturas equivalentes. Las capturas de Chromium son evidencia web.
-La versión publicada ya se verificó con sesión autorizada de Access, incluidos
-lectura offline y guardado online con persistencia tras recargar. Se conserva un
-registro de prueba de ARS 1,00, ID `4`; el total actual de producción es $75.001.
-Falta confirmar el acceso del docente. Sin sesión se comprobó la redirección a Access.
+La versión publicada se verificó, incluidos lectura offline y guardado online con
+persistencia tras recargar. El 9 de noviembre de 2026 se corrigió el diseño
+responsive con nombres y montos largos y se quitó Cloudflare Access para que la
+cátedra pueda entrar sin cuenta. El [hotfix del 9 de noviembre](docs/despliegue-cloudflare-sprint-2.md#hotfix-del-9-de-noviembre-de-2026-acceso-público-y-responsive)
+detalla los pasos de publicación y verificación.
 
 ## Validación de Expo
 

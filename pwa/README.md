@@ -1,6 +1,6 @@
 # ExpenseTracker PWA
 
-Aplicación React + Vite servida por un Cloudflare Worker. El Worker entrega la SPA y expone una API same-origin; los gastos viven en D1 (SQLite). **No habilites una URL pública antes de configurar Cloudflare Access y verificar que la política protege el Worker completo, incluida la API.**
+Aplicación React + Vite servida por un Cloudflare Worker. El Worker entrega la SPA y expone una API same-origin; los gastos viven en D1 (SQLite). Desde el 9/11/2026 la demostración es pública, sin Cloudflare Access, para que la cátedra pueda revisarla sin cuenta. Cualquier visitante puede leer y crear gastos: no cargues datos personales ni financieros reales.
 
 ## Desarrollo local
 
@@ -37,11 +37,11 @@ La semilla usa `INSERT OR IGNORE`, así que se puede volver a aplicar sin duplic
 - `GET /api/expenses/:id`: detalle por ID (404 si falta).
 - `POST /api/expenses`: crea un gasto `{ "name", "amount", "category", "notes?" }`.
 
-El servidor valida los campos y ejecuta SQL parametrizado. Las rutas de API no usan CORS. No hay credenciales en el cliente. Configurá Cloudflare Access para restringir el Worker a las personas autorizadas.
+El servidor valida los campos y ejecuta SQL parametrizado. Las rutas de API no usan CORS. No hay credenciales en el cliente. La API es pública mientras dure la revisión; para volver a restringirla, reactivá Cloudflare Access sobre el Worker completo.
 
-## Publicación con Cloudflare Access
+## Publicación
 
-El Worker está publicado en [expense-tracker-pwa.nicotrib699.workers.dev](https://expense-tracker-pwa.nicotrib699.workers.dev) y protegido por Cloudflare Access para miembros de la cuenta. `workers.dev` está habilitado y las URLs de preview permanecen desactivadas. El historial de configuración y el procedimiento de despliegue están en [el runbook](../docs/despliegue-cloudflare-sprint-2.md).
+El Worker está publicado en [expense-tracker-pwa.nicotrib699.workers.dev](https://expense-tracker-pwa.nicotrib699.workers.dev) con acceso público. Hasta el 8/11/2026 estuvo protegido por Cloudflare Access para miembros de la cuenta; se quitó en el hotfix del 9/11/2026 para que la cátedra pueda entrar. `workers.dev` está habilitado y las URLs de preview permanecen desactivadas. El historial de configuración y el procedimiento de despliegue están en [el runbook](../docs/despliegue-cloudflare-sprint-2.md).
 
 ## Instalación y conexión
 

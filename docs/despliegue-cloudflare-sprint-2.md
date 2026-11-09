@@ -2,7 +2,32 @@
 
 ## Objetivo
 
-Servir la PWA desde Cloudflare Workers, guardar gastos en D1 y exigir Cloudflare Access para la interfaz y la API. La URL pública no se habilita hasta asociar al Worker una política de acceso que solo admita miembros autorizados de la cuenta.
+Servir la PWA desde Cloudflare Workers y guardar gastos en D1. Hasta el 8/11/2026 la interfaz y la API exigían Cloudflare Access; desde el hotfix del 9/11/2026 la demostración es pública para que la cátedra pueda revisarla sin cuenta.
+
+## Hotfix del 9 de noviembre de 2026: acceso público y responsive
+
+**Código.** La lista de gastos ya no desborda horizontalmente con nombres o montos largos: las grillas de Inicio y Gastos usan columnas `minmax(0, 1fr)`, los nombres y montos se recortan con puntos suspensivos (el texto completo queda en `title` y en el detalle), el total del encabezado reduce su tamaño hasta 22 px, el monto del detalle corta solo después de los separadores de miles y, debajo de 360 px, el filtro de categorías muestra solo su ícono. Se comprobó con Chromium a 320, 375, 390 y 600 px que el ancho de desplazamiento coincide con el de la pantalla.
+
+**Cloudflare Access.** Quitar Access es un cambio de la cuenta, no del repositorio, y se hace desde el dashboard:
+
+1. **Workers & Pages** → `expense-tracker-pwa` → **Settings → Domains & Routes** (o la pestaña **Domains**/**Access**): en `workers.dev`, elegir **Disable Cloudflare Access**.
+2. En **Zero Trust → Access → Applications**, eliminar la aplicación `ExpenseTracker PWA` (ID `06d870ee-bf50-4495-bbc1-923d83405d9c`). Si la política `ExpenseTracker - Miembros de la cuenta.` queda sin uso, se puede borrar.
+3. Revisar que no exista otra aplicación Access que cubra todos los Workers de la cuenta o el hostname `expense-tracker-pwa.nicotrib699.workers.dev`.
+
+Publicar el código del hotfix desde `pwa/`:
+
+```sh
+npm run build
+npx wrangler deploy --config dist/expense_tracker_pwa/wrangler.json --keep-vars --message 'HotFix: responsive y acceso público'
+```
+
+Verificación en una ventana privada, sin sesión: `/`, `/expenses`, `/expenses/1`, `/settings` y `/api/expenses` deben responder `200` sin redirigir a `cloudflareaccess.com`.
+
+```sh
+curl -sI https://expense-tracker-pwa.nicotrib699.workers.dev/api/expenses
+```
+
+**Riesgo aceptado.** Sin Access, cualquier persona con la URL puede leer y crear gastos (`POST /api/expenses`). El Worker valida nombre, monto, categoría y notas y usa SQL parametrizado, pero no limita la cantidad de altas. Para volver a restringir el acceso después de la corrección, reactivar Access en el paso 1.
 
 ## Recursos
 

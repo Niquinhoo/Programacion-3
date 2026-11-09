@@ -5,6 +5,9 @@ import { keepTransitionDuration, motion } from '../utils/motion.js';
 import useReduceMotion from '../hooks/useReduceMotion.js';
 import Icon from './Icon.jsx';
 
+// Tamaño mínimo legible; si el total aún no entra, se recorta con puntos suspensivos y queda completo en `title`.
+const minAmountSize = 22;
+
 export default function ExpenseHero({ home, collapsed, expenses, onTransitionChange }) {
   const details = home && !collapsed;
   const previousDetails = useRef(details);
@@ -39,7 +42,10 @@ export default function ExpenseHero({ home, collapsed, expenses, onTransitionCha
     let active = true;
     const fit = () => {
       node.style.fontSize = '48px';
-      if (node.scrollWidth > node.clientWidth) node.style.fontSize = `${Math.max(33.6, 48 * node.clientWidth / node.scrollWidth)}px`;
+      for (let pass = 0; pass < 2 && node.scrollWidth > node.clientWidth; pass += 1) {
+        const size = parseFloat(node.style.fontSize);
+        node.style.fontSize = `${Math.max(minAmountSize, Math.floor(size * node.clientWidth / node.scrollWidth * 10) / 10)}px`;
+      }
     };
     const observer = new ResizeObserver(fit);
     observer.observe(node.parentElement);
@@ -53,7 +59,7 @@ export default function ExpenseHero({ home, collapsed, expenses, onTransitionCha
     <div className="hero-intro-fold" aria-hidden={!details} inert={!details}>
       <div ref={intro} className="hero-intro"><h1>Tus gastos,<br />más claros.</h1><p>Bienvenido. Registrá tus gastos y conocé en qué usás tu dinero.</p></div>
     </div>
-    <div className="balance"><div className="hero-total"><span>{home ? 'TOTAL DE GASTOS' : 'ESTE MES'}</span><strong ref={amount} className="hero-amount">{total}</strong></div>
+    <div className="balance"><div className="hero-total"><span>{home ? 'TOTAL DE GASTOS' : 'ESTE MES'}</span><strong ref={amount} className="hero-amount" title={total}>{total}</strong></div>
       <div className="chart-fold" aria-hidden="true"><div className="chart">{[28, 46, 70, 96].map((height) => <span key={height} style={{ height }} />)}</div></div>
     </div>
     <div className="hero-footer-fold" aria-hidden={!details} inert={!details}><div ref={footer} className="hero-footer"><div className="hero-activity"><span className="count-pill">{expenses.length} gastos</span><span className="hero-hint">registrados</span></div><Link className="overview" to="/expenses" aria-label="Ver visión general de los gastos"><Icon name="pie-chart-outline" size={19} /><span>VISIÓN GENERAL</span><Icon name="arrow-forward" size={18} /></Link></div></div>

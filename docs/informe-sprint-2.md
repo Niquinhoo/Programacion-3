@@ -194,7 +194,7 @@ en un teléfono ni en Expo Go.
 
 - [x] Publicar esta revisión y comprobar la redirección a Access sin sesión.
 - [x] Comprobar con sesión autorizada Inicio, lista, detalle por enlace directo y guardado, con persistencia tras recargar.
-- [ ] Asegurar acceso del docente. La URL requiere una identidad permitida por Access.
+- [ ] Asegurar acceso del docente: quitar Cloudflare Access en el dashboard, publicar el hotfix del 9/11/2026 y comprobar `200` sin sesión ([pasos](despliegue-cloudflare-sprint-2.md#hotfix-del-9-de-noviembre-de-2026-acceso-público-y-responsive)).
 - [ ] En teléfono, instalar desde Chrome/Android o Safari/iOS y tomar captura
   del ícono y nombre en la pantalla de inicio.
 - [ ] Abrir desde el ícono y comprobar modo standalone, áreas seguras y barra inferior.

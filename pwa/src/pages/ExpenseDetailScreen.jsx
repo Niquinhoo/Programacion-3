@@ -5,6 +5,9 @@ import ExpenseSheet from '../components/ExpenseSheet.jsx';
 import { getExpense } from '../services/expenses.js';
 import { formatAmount, formatDate } from '../utils/expense.js';
 
+// Permite cortar montos largos solo después de los separadores de miles.
+const breakableAmount = (text) => text.split('.').flatMap((part, index, parts) => index < parts.length - 1 ? [`${part}.`, <wbr key={index} />] : [part]);
+
 export default function ExpenseDetailScreen({ id }) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -26,7 +29,7 @@ export default function ExpenseDetailScreen({ id }) {
   return <ExpenseSheet title="Detalle del gasto" onClose={back}>
     {error ? <section className="empty-state"><h3>No se encontró el gasto</h3><p>{error}</p></section> : expense ? <>
       <h3 className="sheet-title">{expense.name}</h3>
-      <article className="detail-card"><span className="field-label">MONTO</span><strong className="detail-amount">{formatAmount(expense.amount)}</strong><hr />
+      <article className="detail-card"><span className="field-label">MONTO</span><strong className="detail-amount">{breakableAmount(formatAmount(expense.amount))}</strong><hr />
         <div className="detail-row"><span className="field-label">CATEGORÍA</span><CategoryBadge category={expense.category} /></div>
         <div className="detail-row"><span className="field-label">FECHA</span><time dateTime={expense.date}>{formatDate(expense.date)}</time></div>
         {expense.notes && <div className="detail-notes"><span className="field-label">NOTAS</span><p>{expense.notes}</p></div>}

@@ -11,7 +11,7 @@ const groups = [
   ] },
   { title: 'APP', rows: [
     ['Apariencia', 'Claro', 'La app utiliza un tema claro y azul para todas las acciones.'],
-    ['Seguridad', '', 'El acceso a la aplicación está protegido con Cloudflare Access.'],
+    ['Seguridad', '', 'La demostración es pública para la cátedra. El servidor valida cada gasto antes de guardarlo en D1.'],
     ['Categorías', '', `Categorías disponibles: ${categories.join(', ')}.`],
     ['Moneda y formato', 'ARS', 'Los montos se muestran en pesos argentinos (ARS), con punto para miles y coma para decimales.'],
   ] },
@@ -29,7 +29,7 @@ export default function SettingsScreen({ active }) {
       {groupIndex === 0 && <div className="profile-row"><span className="avatar">N</span><span><strong>Nicolás</strong><small>Modo demostración</small></span><span className="demo-label">DEMO</span></div>}
       {group.rows.map(([label, value, hint], index) => <button className="settings-row" key={label} onClick={() => setMessage(hint)}><Icon name={icons[groupIndex === 0 ? index : groupIndex === 1 ? index + 2 : index + 6]} size={20} /><span className="setting-label">{label}</span>{value && <span className="setting-value">{value}</span>}<Icon name="chevron-forward" size={15} /></button>)}
     </div></section>)}
-    <button className="logout-button" onClick={() => setMessage('El acceso se administra mediante Cloudflare Access.')}><Icon name="log-out-outline" size={21} /><span>Cerrar sesión</span><Icon name="chevron-forward" size={15} /></button>
+    <button className="logout-button" onClick={() => setMessage('Esta demostración no usa cuentas: no hay una sesión que cerrar.')}><Icon name="log-out-outline" size={21} /><span>Cerrar sesión</span><Icon name="chevron-forward" size={15} /></button>
     {message && <section className="notice" role="status"><p>{message}</p><button className="text-button" onClick={() => setMessage('')}>Entendido</button></section>}
   </div></div>;
 }
