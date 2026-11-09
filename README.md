@@ -7,7 +7,7 @@ Repositorio con las dos implementaciones de ExpenseTracker:
 | STP1 | Expo / React Native en la raíz | `npm install` y `npm start`, abrir con Expo Go compatible con SDK 57 |
 | STP2 | React / Vite PWA en `pwa/` | Seguir [el README de la PWA](pwa/README.md) |
 
-PWA publicada: [expense-tracker-pwa.nicotrib699.workers.dev](https://expense-tracker-pwa.nicotrib699.workers.dev), con acceso público para que la cátedra pueda revisarla sin iniciar sesión.
+PWA publicada: [expense-tracker-pwa.nicotrib699.workers.dev](https://expense-tracker-pwa.nicotrib699.workers.dev), con acceso público temporal para que la cátedra pueda revisarla sin iniciar sesión. Se quitó Cloudflare Access solo durante la corrección; los riesgos y la fecha de cierre están en el [análisis de riesgo](docs/despliegue-cloudflare-sprint-2.md#riesgo-de-la-apertura-y-por-qué-se-acepta). No cargues datos reales en la demostración.
 
 El [informe de STP2](docs/informe-sprint-2.md) reúne la comparación Expo/PWA,
 las comprobaciones, el informe Lighthouse y los pendientes de entrega.

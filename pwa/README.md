@@ -1,6 +1,6 @@
 # ExpenseTracker PWA
 
-Aplicación React + Vite servida por un Cloudflare Worker. El Worker entrega la SPA y expone una API same-origin; los gastos viven en D1 (SQLite). Desde el 9/11/2026 la demostración es pública, sin Cloudflare Access, para que la cátedra pueda revisarla sin cuenta. Cualquier visitante puede leer y crear gastos: no cargues datos personales ni financieros reales.
+Aplicación React + Vite servida por un Cloudflare Worker. El Worker entrega la SPA y expone una API same-origin; los gastos viven en D1 (SQLite). Desde el 9/11/2026 la demostración es pública, sin Cloudflare Access, **solo mientras la cátedra corrige STP2**: Access únicamente admitía miembros de la cuenta Cloudflare del alumno. Cualquier visitante puede leer y crear gastos, por lo que no deben cargarse datos personales ni financieros reales. El [análisis de riesgo](../docs/despliegue-cloudflare-sprint-2.md#riesgo-de-la-apertura-y-por-qué-se-acepta) explica qué queda expuesto, por qué se acepta y cuándo se vuelve a activar Access.
 
 ## Desarrollo local
 

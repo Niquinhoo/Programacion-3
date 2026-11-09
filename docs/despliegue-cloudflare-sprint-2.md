@@ -27,7 +27,37 @@ Verificación en una ventana privada, sin sesión: `/`, `/expenses`, `/expenses/
 curl -sI https://expense-tracker-pwa.nicotrib699.workers.dev/api/expenses
 ```
 
-**Riesgo aceptado.** Sin Access, cualquier persona con la URL puede leer y crear gastos (`POST /api/expenses`). El Worker valida nombre, monto, categoría y notas y usa SQL parametrizado, pero no limita la cantidad de altas. Para volver a restringir el acceso después de la corrección, reactivar Access en el paso 1.
+### Riesgo de la apertura y por qué se acepta
+
+**Por qué se abre.** Cloudflare Access solo admitía miembros de la cuenta Cloudflare del alumno. La cátedra no tiene una identidad permitida y no puede crearse una cuenta para cada docente sin compartir la cuenta. La apertura existe **solo para que la cátedra corrija STP2**: no es el modo de operación previsto para la aplicación.
+
+**Qué queda expuesto.** Access protegía el Worker completo. Sin él, cualquier persona que conozca la URL `workers.dev` puede:
+
+| Riesgo | Alcance |
+| --- | --- |
+| Lectura de datos | `GET /api/expenses` y `GET /api/expenses/:id` devuelven todos los gastos de D1. |
+| Altas no autorizadas | `POST /api/expenses` crea gastos sin identificar a quien los carga. |
+| Abuso de volumen | No hay límite de altas ni de consultas; un script podría llenar D1 o consumir la cuota gratuita de Workers/D1. |
+| Copia offline | Cada navegador que abra la PWA guarda la última lista en Cache Storage. |
+
+**Por qué es aceptable por un tiempo acotado.**
+
+- D1 contiene solo gastos de ejemplo y el registro de prueba de ARS 1,00 (ID `4`); no hay datos personales ni financieros reales. Durante la revisión no deben cargarse.
+- La API no permite editar ni borrar gastos: lo peor que puede hacer un tercero es leer datos ficticios o agregar registros, que se borran desde D1.
+- El Worker valida nombre (hasta 100 caracteres), monto, categoría y notas (hasta 1000 caracteres) y usa SQL parametrizado, por lo que una alta maliciosa no puede alterar otras filas ni el esquema.
+- No hay secretos en el cliente ni en el Worker, y no existen cuentas de usuario que robar.
+- La URL se entrega solo a la cátedra y no se difunde en otros lugares. Como también figura en los README del repositorio, cualquiera con acceso al repositorio puede encontrarla: el riesgo de que la descubra un tercero es bajo, pero no nulo.
+
+**Mitigaciones durante la revisión.**
+
+1. Revisar periódicamente los gastos en D1 y eliminar los que no sean de ejemplo:
+   ```sh
+   npx wrangler d1 execute expense-tracker-pwa --remote --command "SELECT id, name, amount, date FROM expenses ORDER BY id DESC LIMIT 20"
+   ```
+2. Consultar los logs del Worker (muestreo del 10%) si aparece tráfico inusual.
+3. Si se detecta abuso, reactivar Access de inmediato (paso 1, **Enable Cloudflare Access**) o desactivar `workers.dev`.
+
+**Cierre.** Cuando la cátedra termine la corrección, volver a activar Cloudflare Access sobre el Worker completo, comprobar que `/` y `/api/expenses` vuelven a responder `302` hacia Access sin sesión y registrar la fecha en este documento.
 
 ## Recursos
 
